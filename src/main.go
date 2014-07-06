@@ -17,6 +17,7 @@ func main() {
 	title,_ := b.ReadString('\n')
 	out = out[len(title):]
 	title = nohtmltag(title)
+        println(title)
 	article.AppendArticle("article/tlp.html", title, out)
     return 
 }
