@@ -36,9 +36,7 @@ func seekPosition(file string) int{
 		}
 
 		l := strings.Trim(line," \n\t")
-		println(l)
 		if l==`<!--appendend-->` {
-			println("find append end")
 			break
 		}
 		offset += len(line)
