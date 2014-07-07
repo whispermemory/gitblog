@@ -166,6 +166,56 @@
 </p><p style="padding-left: 30px;"></ul>
 </p></div>
 </div>
+<div id="post-449" class="post-449 post type-post status-publish format-standard hentry category-64 tag-django tag-vps tag-150 tag-4">
+<h2 class="entry-title"> <font color="green">emacs 提交 md 文件到 github 首页流程</font> </h2>
+<div class="entry-meta">2014-07-07 19:07</div>
+<div class="entry-content clearfix"><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h2>markdown 转成 html</h2>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><pre><code>$   git clone git@github.com:whispermemory/gitblog.git
+</p><p style="padding-left: 30px;">$   cd gitblog
+</p><p style="padding-left: 30px;">$   export GOPATH=`pwd`
+</p><p style="padding-left: 30px;">$   go build src/gitblog.go
+</p><p style="padding-left: 30px;">$   cp src/gitblog  /usr/local/bin/
+</p><p style="padding-left: 30px;"></code></pre>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h2>实现 github 提交 shell</h2>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><pre><code>cd $1
+</p><p style="padding-left: 30px;">git add index.html
+</p><p style="padding-left: 30px;">git commit -m&#34;push blog&#34;
+</p><p style="padding-left: 30px;">git push origin gh-pages
+</p><p style="padding-left: 30px;"></code></pre>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h2>在 emacs 中提交 md 文件</h2>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><ul>
+</p><p style="padding-left: 30px;"><li>hook markdown mode</li>
+</p><p style="padding-left: 30px;"><li>在 .emacs 文件中添加如下代码</li>
+</p><p style="padding-left: 30px;"></ul>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><pre><code>
+</p><p style="padding-left: 30px;">(defun postmd()
+</p><p style="padding-left: 30px;">(interactive)
+</p><p style="padding-left: 30px;">(setq compile_filename (buffer-name (current-buffer)))
+</p><p style="padding-left: 30px;">(setq cmdstr (concat &#34;gitblog &#34;  compile_filename &#34; &#34; &#34;/Users/whispermemory/my_src/gitblog/index.html&#34;))
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;">(shell-command cmdstr)
+</p><p style="padding-left: 30px;">)
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;">(defun pushmd()
+</p><p style="padding-left: 30px;">(interactive)
+</p><p style="padding-left: 30px;">(shell-command &#34;bash pushmd.sh ~/my_src/gitblog/&#34;)
+</p><p style="padding-left: 30px;">)
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;">(add-hook &#39;markdown-mode-hook (lambda ()
+</p><p style="padding-left: 30px;">(local-set-key (kbd &#34;F8&#34;) &#39;postmd)))
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;">(add-hook &#39;markdown-mode-hook (lambda ()
+</p><p style="padding-left: 30px;">(local-set-key (kbd &#34;F9&#34;) &#39;pushmd)))
+</p><p style="padding-left: 30px;"></code></pre>
+</p></div>
+</div>
 		  <!--appendend-->
 		</div>
 	  </div>
