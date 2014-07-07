@@ -1,0 +1,3 @@
+[submodule "blackfriday"]
+	path = blackfriday
+	url = /Users/whispermemory/my_src/gitblog/src/github.com/russross/blackfriday
