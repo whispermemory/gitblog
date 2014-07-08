@@ -77,13 +77,9 @@
               </p><p style="padding-left: 30px;"><li><p>上传该 html</p></li>
               </p><p style="padding-left: 30px;"></ul>
 </p><p style="padding-left: 30px;">
-</p><p style="padding-left: 30px;"><pre><code>println(&#34;hello, world&#34;)
+</p><p style="padding-left: 30px;"><pre><code>println(&#34;hello, github&#34;)
 </p><p style="padding-left: 30px;"></code></pre>
 </p><p style="padding-left: 30px;">
-</p><p style="padding-left: 30px;"><pre><code>func getTrue() bool {
-</p><p style="padding-left: 30px;">return true
-</p><p style="padding-left: 30px;">}
-</p><p style="padding-left: 30px;"></code></pre>
 </p></div>
 </div>
 <div id="post-449" class="post-449 post type-post status-publish format-standard hentry category-64 tag-django tag-vps tag-150 tag-4">
@@ -138,7 +134,7 @@
 </div>
 <div id="post-449" class="post-449 post type-post status-publish format-standard hentry category-64 tag-django tag-vps tag-150 tag-4">
 <h2 class="entry-title"> <font color="green">git 基本使用</font> </h2>
-<div class="entry-meta">2014-07-07 21:07</div>
+<div class="entry-meta">2014-07-08 09:08</div>
 <div class="entry-content clearfix"><p style="padding-left: 30px;">
 </p><p style="padding-left: 30px;"><h2>.git</h2>
 </p><p style="padding-left: 30px;">
@@ -165,66 +161,101 @@
 </p><p style="padding-left: 30px;"><li>commit 对象里面保存了相关的 diff 信息</li>
 </p><p style="padding-left: 30px;"></ul>
 </p><p style="padding-left: 30px;">
-</p><p style="padding-left: 30px;"><p>$ git show 15687c5d6eb32c28c3e151526d43e6878eae6afa</p>
+</p><p style="padding-left: 30px;"><pre><code>$ git show 15687c5d6eb32c28c3e151526d43e6878eae6afa
 </p><p style="padding-left: 30px;">
-</p><p style="padding-left: 30px;"><p>commit 15687c5d6eb32c28c3e151526d43e6878eae6afa
-</p><p style="padding-left: 30px;">Author: whispermemory <a href="mailto:whispermemory@gmail.com">whispermemory@gmail.com</a>
-</p><p style="padding-left: 30px;">Date:   Mon Jul 7 15:54:50 2014 +0800</p>
+</p><p style="padding-left: 30px;">commit 15687c5d6eb32c28c3e151526d43e6878eae6afa
+</p><p style="padding-left: 30px;">Author: whispermemory &lt;whispermemory@gmail.com&gt;
+</p><p style="padding-left: 30px;">Date:   Mon Jul 7 15:54:50 2014 +0800
 </p><p style="padding-left: 30px;">
-</p><p style="padding-left: 30px;"><p>init submodule</p>
+</p><p style="padding-left: 30px;">init submodule
 </p><p style="padding-left: 30px;">
-</p><p style="padding-left: 30px;"><p>diff –git a/.gitmodules b/.gitmodules
+</p><p style="padding-left: 30px;">diff --git a/.gitmodules b/.gitmodules
 </p><p style="padding-left: 30px;">new file mode 100644
 </p><p style="padding-left: 30px;">index 0000000..18862e6
-</p><p style="padding-left: 30px;">— /dev/null
+</p><p style="padding-left: 30px;">--- /dev/null
 </p><p style="padding-left: 30px;">+++ b/.gitmodules
 </p><p style="padding-left: 30px;">@@ -0,0 +1,3 @@
-</p><p style="padding-left: 30px;">+[submodule “blackfriday”]
+</p><p style="padding-left: 30px;">+[submodule &#34;blackfriday&#34;]
 </p><p style="padding-left: 30px;">+       path = blackfriday
 </p><p style="padding-left: 30px;">+       url = /Users/whispermemory/my_src/gitblog/src/github.com/russross/blackfriday
-</p><p style="padding-left: 30px;">diff –git a/blackfriday b/blackfriday
+</p><p style="padding-left: 30px;">diff --git a/blackfriday b/blackfriday
 </p><p style="padding-left: 30px;">new file mode 160000
 </p><p style="padding-left: 30px;">index 0000000..7680f7f
-</p><p style="padding-left: 30px;">— /dev/null
+</p><p style="padding-left: 30px;">--- /dev/null
 </p><p style="padding-left: 30px;">+++ b/blackfriday
 </p><p style="padding-left: 30px;">@@ -0,0 +1 @@
-</p><p style="padding-left: 30px;">+Subproject commit</p>
+</p><p style="padding-left: 30px;">+Subproject commit
 </p><p style="padding-left: 30px;">
-</p><p style="padding-left: 30px;"><pre><code>
-</p><p style="padding-left: 30px;">*  可以用这个索引来恢复数据到上次 push 的状态
 </p><p style="padding-left: 30px;"></code></pre>
 </p><p style="padding-left: 30px;">
-</p><p style="padding-left: 30px;"><p>git reset –hard ORIG_HEAD</p>
+</p><p style="padding-left: 30px;"><ul>
+</p><p style="padding-left: 30px;"><li>可以用这个索引来恢复数据到上次 push 的状态</li>
+</p><p style="padding-left: 30px;"></ul>
 </p><p style="padding-left: 30px;">
-</p><p style="padding-left: 30px;"><pre><code>*  同样的要恢复到上次 commit 的状态
+</p><p style="padding-left: 30px;"><pre><code>git reset --hard ORIG_HEAD
 </p><p style="padding-left: 30px;"></code></pre>
 </p><p style="padding-left: 30px;">
-</p><p style="padding-left: 30px;"><p>git reset –hard HEAD</p>
+</p><p style="padding-left: 30px;"><ul>
+</p><p style="padding-left: 30px;"><li>同样的要恢复到上次 commit 的状态</li>
+</p><p style="padding-left: 30px;"></ul>
 </p><p style="padding-left: 30px;">
-</p><p style="padding-left: 30px;"><pre><code>
-</p><p style="padding-left: 30px;">## commit 对象 ##
-</p><p style="padding-left: 30px;">*  commit 对象使用 40 位字符串进行索引
-</p><p style="padding-left: 30px;">*  每次 commit 都会包含相关文件夹，文件 和相关 commit
+</p><p style="padding-left: 30px;"><pre><code>git reset --hard HEAD
 </p><p style="padding-left: 30px;"></code></pre>
 </p><p style="padding-left: 30px;">
-</p><p style="padding-left: 30px;"><p>$ git ls-tree 15687c5d6eb32c28c3e151526d43e6878eae6afa
-</p><p style="padding-left: 30px;">100644 blob 18862e6288a1b3e0727feca362cf6ef12beffb29    .gitmodules
-</p><p style="padding-left: 30px;">100644 blob 451f0aa56a737800adeed08d0658c2e0f6d6bbfc    A.css
-</p><p style="padding-left: 30px;">100644 blob 0fb8b05532ec2caa638a0c2fadc7ca588774c77d    CNAME
-</p><p style="padding-left: 30px;">100644 blob 9282d22af4df76e1afb55dea752b77adc6943974    README.md
-</p><p style="padding-left: 30px;">160000 commit 7680f7fdeb0d57222f62d02802af5e3585722384  blackfriday
-</p><p style="padding-left: 30px;">040000 tree 2f575a23aec5e9922c4822cdc6ac3a12543fd3ac    images
-</p><p style="padding-left: 30px;">100644 blob 64b5b259769db3493c83f3146ebd2c0944f69ed9    index.html
-</p><p style="padding-left: 30px;">040000 tree b5484ac6806b1cc2899a9f615e9439a46b850781    javascripts
-</p><p style="padding-left: 30px;">100644 blob f19e9a9b74690b79b222d541c9edd16c48983098    params.json
-</p><p style="padding-left: 30px;">040000 tree a6d238546007c7fc1f715fed9d257765527cf7ab    pkg
-</p><p style="padding-left: 30px;">100644 blob df83e41df19af5952f53bde9cb61eb200442d553    preview.png
-</p><p style="padding-left: 30px;">040000 tree 1cc8fcb88b1af4672db609faeb79897d410a4215    src
-</p><p style="padding-left: 30px;">040000 tree db1a9428acf5e44a0dc31f16bfdddb6563f4f774    stylesheets
+</p><p style="padding-left: 30px;"><h2>commit 对象</h2>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><ul>
+</p><p style="padding-left: 30px;"><li>commit 对象使用 40 位字符串进行索引</li>
+</p><p style="padding-left: 30px;"><li>每次 commit 都会包含相关文件夹，文件 和相关 commit</li>
+</p><p style="padding-left: 30px;"></ul>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><pre><code>$ git ls-tree 15687c5d6eb32c28c3e151526d43e6878eae6afa
+</p><p style="padding-left: 30px;">100644 blob 18862e6288a1b3e0727feca362cf6ef12beffb29	.gitmodules
+</p><p style="padding-left: 30px;">100644 blob 451f0aa56a737800adeed08d0658c2e0f6d6bbfc	A.css
+</p><p style="padding-left: 30px;">100644 blob 0fb8b05532ec2caa638a0c2fadc7ca588774c77d	CNAME
+</p><p style="padding-left: 30px;">100644 blob 9282d22af4df76e1afb55dea752b77adc6943974	README.md
+</p><p style="padding-left: 30px;">160000 commit 7680f7fdeb0d57222f62d02802af5e3585722384	blackfriday
+</p><p style="padding-left: 30px;">040000 tree 2f575a23aec5e9922c4822cdc6ac3a12543fd3ac	images
+</p><p style="padding-left: 30px;">100644 blob 64b5b259769db3493c83f3146ebd2c0944f69ed9	index.html
+</p><p style="padding-left: 30px;">040000 tree b5484ac6806b1cc2899a9f615e9439a46b850781	javascripts
+</p><p style="padding-left: 30px;">100644 blob f19e9a9b74690b79b222d541c9edd16c48983098	params.json
+</p><p style="padding-left: 30px;">040000 tree a6d238546007c7fc1f715fed9d257765527cf7ab	pkg
+</p><p style="padding-left: 30px;">100644 blob df83e41df19af5952f53bde9cb61eb200442d553	preview.png
+</p><p style="padding-left: 30px;">040000 tree 1cc8fcb88b1af4672db609faeb79897d410a4215	src
+</p><p style="padding-left: 30px;">040000 tree db1a9428acf5e44a0dc31f16bfdddb6563f4f774	stylesheets
 </p><p style="padding-left: 30px;">➜```
 </p><p style="padding-left: 30px;">*  blob 是这次修改到得文件的内容
 </p><p style="padding-left: 30px;">*  tree 是本次修改文件夹的内容
-</p><p style="padding-left: 30px;">*  commit 也是一个 tree, 可以使用 git ls-tree db1a9428acf5e44a0dc31f16bfdddb6563f4f774</p>
+</p><p style="padding-left: 30px;">*  commit 也是一个 tree, 可以使用 git ls-tree db1a9428acf5e44a0dc31f16bfdddb6563f4f774
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;">## merge ##
+</p><p style="padding-left: 30px;">*  适用于不同分支不同版本之间合并 A B
+</p><p style="padding-left: 30px;">*  针对于 B commit 对象而合并
+</p><p style="padding-left: 30px;">*  merge 之后 A 处于未提交状态
+</p><p style="padding-left: 30px;">*  B 可以作为一个临时的版本删除掉
+</p><p style="padding-left: 30px;"></code></pre>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><p>$  git branch -d  B</p>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><pre><code>*  冲突解决
+</p><p style="padding-left: 30px;">*  A 有 commit 未提交的时候需要 git stash
+</p><p style="padding-left: 30px;">*  切换到 B , 令 A commit 的文件与 B 的相同文件产生不同
+</p><p style="padding-left: 30px;">*  切换到 A, git merge B, 提示
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"></code></pre>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><p>$    git merge test
+</p><p style="padding-left: 30px;">Auto-merging README.md
+</p><p style="padding-left: 30px;">CONFLICT (content): Merge conflict in README.md
+</p><p style="padding-left: 30px;">Automatic merge failed; fix conflicts and then commit the result.</p>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><pre><code>*  手动修改冲突文件之后，再次 add 并 commit 文件
+</p><p style="padding-left: 30px;">*  删除 B 分支
+</p><p style="padding-left: 30px;"></code></pre>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><p>$    git branch -d B
+</p><p style="padding-left: 30px;">```</p>
 </p></div>
 </div>
 		  <!--appendend-->
