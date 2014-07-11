@@ -269,11 +269,11 @@
 </p><p style="padding-left: 30px;"><li>使用单一 IO 进行并发按行文本分析。文本约 800W 行。</li>
 </p><p style="padding-left: 30px;"></ul>
 </p><p style="padding-left: 30px;">
-</p><p style="padding-left: 30px;"><pre><code>f = open()
-</p><p style="padding-left: 30px;">for {
-</p><p style="padding-left: 30px;">line = r.ReadString()
-</p><p style="padding-left: 30px;">go handle(line)
-</p><p style="padding-left: 30px;">}
+</p><p style="padding-left: 30px;"><pre><code>    f = open()
+</p><p style="padding-left: 30px;">    for {
+</p><p style="padding-left: 30px;">        line = r.ReadString()
+</p><p style="padding-left: 30px;">		go handle(line)
+</p><p style="padding-left: 30px;">    }
 </p><p style="padding-left: 30px;">
 </p><p style="padding-left: 30px;"></code></pre>
 </p><p style="padding-left: 30px;">
@@ -286,17 +286,17 @@
 </p><p style="padding-left: 30px;">sys 0m5.049s</p>
 </p><p style="padding-left: 30px;">
 </p><p style="padding-left: 30px;"><pre><code>func handleOnChan() {
-</p><p style="padding-left: 30px;">x&lt;-chanX
-</p><p style="padding-left: 30px;">handle(x)
+</p><p style="padding-left: 30px;">    x&lt;-chanX
+</p><p style="padding-left: 30px;">    handle(x)
 </p><p style="padding-left: 30px;">}
 </p><p style="padding-left: 30px;">
 </p><p style="padding-left: 30px;">for (i--poolSize) {
-</p><p style="padding-left: 30px;">go handleOnChan()
+</p><p style="padding-left: 30px;">    go handleOnChan()
 </p><p style="padding-left: 30px;">}
 </p><p style="padding-left: 30px;">
 </p><p style="padding-left: 30px;">for {
-</p><p style="padding-left: 30px;">line = readString()
-</p><p style="padding-left: 30px;">chanX &lt;-line
+</p><p style="padding-left: 30px;">    line = readString()
+</p><p style="padding-left: 30px;">    chanX &lt;-line
 </p><p style="padding-left: 30px;">}
 </p><p style="padding-left: 30px;">
 </p><p style="padding-left: 30px;"></code></pre>
@@ -348,11 +348,46 @@
 </p><p style="padding-left: 30px;"><h2>并发池</h2>
 </p><p style="padding-left: 30px;">
 </p><p style="padding-left: 30px;"><ul>
-</p><p style="padding-left: 30px;"><li>用于通信的 channel 池
-</p><p style="padding-left: 30px;">var pool chan chan *Message</li>
+</p><p style="padding-left: 30px;"><li>用于通信的 channel 池</li>
+</p><p style="padding-left: 30px;"></ul>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><pre><code>var pool chan chan *Message
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"></code></pre>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><ul>
 </p><p style="padding-left: 30px;"><li>每一个 chan *Message 对应一个 routine</li>
+</p><p style="padding-left: 30px;"></ul>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><pre><code>for index&lt;poolSize{
+</p><p style="padding-left: 30px;">    var c chan *Message = make(*Message ,1)
+</p><p style="padding-left: 30px;">    go routine(chan messchan)
+</p><p style="padding-left: 30px;">	c&lt;-nil
+</p><p style="padding-left: 30px;">}
+</p><p style="padding-left: 30px;"></code></pre>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><ul>
 </p><p style="padding-left: 30px;"><li>每一个 routine 都常驻</li>
 </p><p style="padding-left: 30px;"></ul>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><pre><code>for {
+</p><p style="padding-left: 30px;">   message := &lt;-messchan
+</p><p style="padding-left: 30px;">   if message = nil {
+</p><p style="padding-left: 30px;">        pool&lt;-messchan
+</p><p style="padding-left: 30px;">   }
+</p><p style="padding-left: 30px;">   handle(message)
+</p><p style="padding-left: 30px;">}
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"></code></pre>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><ul>
+</p><p style="padding-left: 30px;"><li>需要处理一个事件时，取一个消息管道</li>
+</p><p style="padding-left: 30px;"></ul>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><pre><code>   c := &lt;-pool
+</p><p style="padding-left: 30px;">   var m *Message = &amp;Message{}
+</p><p style="padding-left: 30px;">   c&lt;-m
+</p><p style="padding-left: 30px;"></code></pre>
 </p></div>
 </div>
 		  <!--appendend-->
