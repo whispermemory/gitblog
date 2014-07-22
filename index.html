@@ -391,6 +391,170 @@
 </p><p style="padding-left: 30px;"></code></pre>
 </p></div>
 </div>
+<div id="post-449" class="post-449 post type-post status-publish format-standard hentry category-64 tag-django tag-vps tag-150 tag-4">
+<h2 class="entry-title"> <font color="green">golang gc</font> </h2>
+<div class="entry-meta">2014-07-22 17:22</div>
+<div class="entry-content clearfix"><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><p>golang gc 采用的是一种简单的 mark &amp; sweep 算法。每隔 2 s 就挂起所有 routine 扫描对象并标记，进行 sweep。 这种算法有一个弊端是每次 gc 如果时间太长会对业务产生影响。</p>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h2>优化 gc</h2>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><p>对日志文件切割传输遇到 gc 问题。每次 gc 时间超长</p>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h3>通过  GODEBUG=gctrace=1 查看 gc 日志</h3>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><p>GODEBUG=gctrace=1 ./proc &amp;&gt; gclog.txt</p>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><pre><code>gc27(2): 297+37+284891+13 us, 305 -&gt; 611 MB, 5772810 (35644683-29871873) objects, 70356/7344/0 sweeps, 9(529) handoff, 5(3030) steal, 95/27/1 yields
+</p><p style="padding-left: 30px;"></code></pre>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><p>这次 gc 释放了 5772810 个对象。全局持有 29871873 个对象。耗时 284us = 0.2s。</p>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h3>优化思路</h3>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><p>1  比较各种数据类型之间的优化复杂度
+</p><p style="padding-left: 30px;">2  确定为什么 slice 是比较容易优化的。 参见 <a href="http://1234n.com/?post/yzsrwa。">http://1234n.com/?post/yzsrwa。</a>
+</p><p style="padding-left: 30px;">3  用手动 slice 替换系统 slice<br/>
+</p><p style="padding-left: 30px;">4  确定 string 和 slice 的差距
+</p><p style="padding-left: 30px;">5  找到测试 gc 的好办法    Lookup(“heap)</p>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><p>gc 优化目标–尽量减少 gc 时间消耗
+</p><p style="padding-left: 30px;">1&gt; 使用易 gc 对象
+</p><p style="padding-left: 30px;">2&gt; 使用内存池
+</p><p style="padding-left: 30px;">3&gt; 减少生成的对象，使用生成对象少得类型(slice of struct)
+</p><p style="padding-left: 30px;">4&gt; slice 要用对象类型而非对象指针类型</p>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h4>查看生成 1w 个数据生成对象数量</h4>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h5>slice #</h5>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><p>go vertion 1.2
+</p><p style="padding-left: 30px;">*  HeapObjects = 10114
+</p><p style="padding-left: 30px;">*  Stack = 81494016 / 81657856
+</p><p style="padding-left: 30px;">*  MSpan = 78000 / 81920
+</p><p style="padding-left: 30px;">*  MCache = 1504 / 16384
+</p><p style="padding-left: 30px;">*  BuckHashSys = 1480848
+</p><p style="padding-left: 30px;">*  NextGC = 6372976
+</p><p style="padding-left: 30px;">*  PauseNs = [166380 55454 6114040</p>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><p>go version 1.3
+</p><p style="padding-left: 30px;">* HeapObjects = 6864
+</p><p style="padding-left: 30px;">* Stack = 52240384 / 52559872
+</p><p style="padding-left: 30px;">* MSpan = 34048 / 49152
+</p><p style="padding-left: 30px;">* MCache = 2200 / 16384
+</p><p style="padding-left: 30px;">* BuckHashSys = 1440664
+</p><p style="padding-left: 30px;">* NextGC = 4418096
+</p><p style="padding-left: 30px;">* PauseNs = [179012 231633 4966871</p>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h5>string</h5>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><p>go version 1.3
+</p><p style="padding-left: 30px;">*  HeapObjects = 5645
+</p><p style="padding-left: 30px;">*  Stack = 42614784 / 42860544
+</p><p style="padding-left: 30px;">*  MSpan = 28416 / 32768
+</p><p style="padding-left: 30px;">*  MCache = 2200 / 16384
+</p><p style="padding-left: 30px;">*  BuckHashSys = 1440664
+</p><p style="padding-left: 30px;">*  NextGC = 3404880</p>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><p>go version 1.2
+</p><p style="padding-left: 30px;">*  HeapObjects = 10080
+</p><p style="padding-left: 30px;">*  Stack = 81494016 / 81657856
+</p><p style="padding-left: 30px;">*  MSpan = 77792 / 81920
+</p><p style="padding-left: 30px;">*  MCache = 1504 / 16384
+</p><p style="padding-left: 30px;">*  BuckHashSys = 1480664
+</p><p style="padding-left: 30px;">*  NextGC = 6373392
+</p><p style="padding-left: 30px;">*  PauseNs = [164000 57000 4911836</p>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h5>map</h5>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><p>1.3
+</p><p style="padding-left: 30px;">*  map[int]string *
+</p><p style="padding-left: 30px;">*  HeapObjects = 6274
+</p><p style="padding-left: 30px;">*  Stack = 42459136 / 42598400
+</p><p style="padding-left: 30px;">*  MSpan = 31104 / 32768
+</p><p style="padding-left: 30px;">*  MCache = 2200 / 16384
+</p><p style="padding-left: 30px;">*  BuckHashSys = 1441104
+</p><p style="padding-left: 30px;">*  NextGC = 3121360
+</p><p style="padding-left: 30px;">*  PauseNs = [124703 3325897</p>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h5>map[int]struct</h5>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><ul>
+</p><p style="padding-left: 30px;"><li>HeapObjects = 6571</li>
+</p><p style="padding-left: 30px;"><li>Stack = 44220416 / 44433408</li>
+</p><p style="padding-left: 30px;"><li>MSpan = 32128 / 32768</li>
+</p><p style="padding-left: 30px;"><li>MCache = 2200 / 16384</li>
+</p><p style="padding-left: 30px;"><li>BuckHashSys = 1441336</li>
+</p><p style="padding-left: 30px;"><li>NextGC = 2995568</li>
+</p><p style="padding-left: 30px;"><li>PauseNs = [132551 2436114</li>
+</p><p style="padding-left: 30px;"></ul>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h5>map[int]*struct</h5>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><ul>
+</p><p style="padding-left: 30px;"><li>HeapReleased = 0</li>
+</p><p style="padding-left: 30px;"><li>HeapObjects = 16796</li>
+</p><p style="padding-left: 30px;"><li>Stack = 46153728 / 46399488</li>
+</p><p style="padding-left: 30px;"><li>MSpan = 35328 / 49152</li>
+</p><p style="padding-left: 30px;"><li>MCache = 2200 / 16384</li>
+</p><p style="padding-left: 30px;"><li>BuckHashSys = 1441112</li>
+</p><p style="padding-left: 30px;"><li>NextGC = 2858128</li>
+</p><p style="padding-left: 30px;"><li>PauseNs = [152215 2232194</li>
+</p><p style="padding-left: 30px;"></ul>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h5>[] *struct</h5>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><ul>
+</p><p style="padding-left: 30px;"><li>HeapObjects = 15898</li>
+</p><p style="padding-left: 30px;"><li>Stack = 43950080 / 44171264</li>
+</p><p style="padding-left: 30px;"><li>MSpan = 31872 / 32768</li>
+</p><p style="padding-left: 30px;"><li>MCache = 2200 / 16384</li>
+</p><p style="padding-left: 30px;"><li>BuckHashSys = 1441080</li>
+</p><p style="padding-left: 30px;"><li>NextGC = 3177328</li>
+</p><p style="padding-left: 30px;"><li>PauseNs = [133127 169560 2927747</li>
+</p><p style="padding-left: 30px;"></ul>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h5>[]struct</h5>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><ul>
+</p><p style="padding-left: 30px;"><li>HeapObjects = 5684</li>
+</p><p style="padding-left: 30px;"><li>Stack = 42909696 / 43122688</li>
+</p><p style="padding-left: 30px;"><li>MSpan = 28800 / 32768</li>
+</p><p style="padding-left: 30px;"><li>MCache = 2200 / 16384</li>
+</p><p style="padding-left: 30px;"><li>BuckHashSys = 1440664</li>
+</p><p style="padding-left: 30px;"><li>NextGC = 3753936</li>
+</p><p style="padding-left: 30px;"><li>PauseNs = [125426 194529 2964888</li>
+</p><p style="padding-left: 30px;"></ul>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h4>数据结论</h4>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><ul>
+</p><p style="padding-left: 30px;"><li>[]struct 是生成对象最少的</li>
+</p><p style="padding-left: 30px;"><li>string 和 slice 的生成对象差不多</li>
+</p><p style="padding-left: 30px;"><li>go1.3 在对象生成数量上做了优化</li>
+</p><p style="padding-left: 30px;"></ul>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h3>使用 memory pool</h3>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h4>考虑减少对象的 gc 时间可以从常驻内存入手</h4>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h4>使用  chan chan 来做为 memory pool</h4>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><pre><code>mempool := make(chan *memStruct, count)
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"></code></pre>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h4>申请 memStruct</h4>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><pre><code>structPointer := &lt;- mempool
+</p><p style="padding-left: 30px;"></code></pre>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h4>用完回放</h4>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><pre><code>mempool&lt;-structPointer
+</p><p style="padding-left: 30px;"></code></pre>
+</p></div>
+</div>
 		  <!--appendend-->
 		</div>
 	  </div>
