@@ -555,6 +555,31 @@
 </p><p style="padding-left: 30px;"></code></pre>
 </p></div>
 </div>
+<div id="post-449" class="post-449 post type-post status-publish format-standard hentry category-64 tag-django tag-vps tag-150 tag-4">
+<h2 class="entry-title"> <font color="green">golang 手机游戏服务器 &amp;lt;一&amp;gt;</font> </h2>
+<div class="entry-meta">2014-12-02 17:02</div>
+<div class="entry-content clearfix"><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><p>最近想做一个休闲类游戏服务器, 能够实现一个简单的游戏服务器. 目标是保证服务稳定性以及可伸缩性能.</p>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h2>网络选择</h2>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><ul>
+</p><p style="padding-left: 30px;"><li>tcp  golang/erlang 大大简化了 tcp 的使用, 使用 tcp 网络协议标准是, 我们的客户端, 对于网络丢包产生的影响. 因为是轻休闲类的游戏，是可以考虑 tcp 的.</li>
+</p><p style="padding-left: 30px;"><li>udp 发包不确认, 但是对服务端网络压力不大. 一个用户的数据发送出问题, 也不会影响其它用户.</li>
+</p><p style="padding-left: 30px;"><li>http 携带了很多 http 协议的数据, 不考虑.</li>
+</p><p style="padding-left: 30px;"><li>websocket 主要是用在浏览器客户端上, 持久连接. 不考虑.</li>
+</p><p style="padding-left: 30px;"></ul>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><h2>语言的选择</h2>
+</p><p style="padding-left: 30px;">
+</p><p style="padding-left: 30px;"><p>要使用支持协程的语言, 这种并发方式比较简单易懂. 经过多方考虑, 最终选择 golang 做为开发语言.
+</p><p style="padding-left: 30px;">*  c++ 对于非专业 c++ programmer 来说难度稍大, 放弃.
+</p><p style="padding-left: 30px;">*  erlang 的 otp 提供了强大了网络框架, 并且能提供热更. 但以 erlang game server 为 keyword 从 github 找源码, 发现大部分已经断更, 在 erlang 17 环境下无法编译通过, 加上 erlang 的代码看起来很难懂, 遂放弃之. 另外的问题是, CPU 不好做 profile ,内存使用较高,不适合计算密集型. 写逻辑复杂. 可以考虑后期加强服务伸缩性使用它来做网络框架,然后进程间通信到 golang/rustlang 做逻辑.
+</p><p style="padding-left: 30px;">*  rustlang 稍微复杂的内存管理模型, 个人体会 closure 很强大, 另外使用模式匹配比 erlang 可读性强. 但是目前版本变化很大, 1.0 发布遥遥无期(官方称年底发布). 可后期观望.
+</p><p style="padding-left: 30px;">*  golang 是近一年我所用的语言, gc 稍微有些问题, 据说 1.5 版本会修改 gc 算法, 值得期待. 包导出函数和变量需首字母大写, 感觉很别扭. 但考虑到简单强大, golang 还是很强力的.
+</p><p style="padding-left: 30px;">*  nodejs 的异步方法跟上面几种语言的都不同. 因为异步回掉写起来很随意, 导致代码里面各种又臭又长的异步回掉. 默认不支持多 cpu. 弱的类型检查. 总之就是写的时候爽, 运行时易出错, 读的时候各种痛苦.</p>
+</p></div>
+</div>
 		  <!--appendend-->
 		</div>
 	  </div>
