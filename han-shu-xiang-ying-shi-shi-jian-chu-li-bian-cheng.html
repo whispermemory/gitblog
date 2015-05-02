@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <meta charset="utf-8"> 
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="hell@world" />
+        <meta name="copyright" content="hell@world" />
+
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary">
+
+<meta name="keywords" content=", functional, " />
+
+<meta property="og:title" content="函数响应式事件处理编程 "/>
+<meta property="og:url" content="/han-shu-xiang-ying-shi-shi-jian-chu-li-bian-cheng.html" />
+<meta property="og:description" content="翻译: By rustup(欢迎转载分享,请注明出处) 原文: Functional reactive event handling 事件处理是相当复杂,有时候甚至会十分的凌乱的编程工作. 函数响应式编程(FRP),是有希望能解决所有经典观察者模式问题的事件处理编程范式. 当第一次从 Stephen Blackheath 的演讲听到这这个感念的时候, 我是十分好奇的. 这种模型使得事件处理比我想象的要容易的多. (Stephen Blackheath 和他的小伙伴们一起实现的库) 尝试通过一致 API 提供跨语言的实现. 我打算通过自己所学到的 Rust 语言来开始开发 FRP 原型. 经过努力,我实现了 Carboxyl 库, 挂在 github , crates.io 和 rustci 上面. 你可以把它当作是 Sodium 大部分的功能的 Rust 实现 ..." />
+<meta property="og:site_name" content="代码火花" />
+<meta property="og:article:author" content="hell@world" />
+<meta property="og:article:published_time" content="2015-04-26T00:00:00" />
+<meta name="twitter:title" content="函数响应式事件处理编程 ">
+<meta name="twitter:description" content="翻译: By rustup(欢迎转载分享,请注明出处) 原文: Functional reactive event handling 事件处理是相当复杂,有时候甚至会十分的凌乱的编程工作. 函数响应式编程(FRP),是有希望能解决所有经典观察者模式问题的事件处理编程范式. 当第一次从 Stephen Blackheath 的演讲听到这这个感念的时候, 我是十分好奇的. 这种模型使得事件处理比我想象的要容易的多. (Stephen Blackheath 和他的小伙伴们一起实现的库) 尝试通过一致 API 提供跨语言的实现. 我打算通过自己所学到的 Rust 语言来开始开发 FRP 原型. 经过努力,我实现了 Carboxyl 库, 挂在 github , crates.io 和 rustci 上面. 你可以把它当作是 Sodium 大部分的功能的 Rust 实现 ...">
+
+        <title>函数响应式事件处理编程  · 代码火花
+</title>
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.1/css/font-awesome.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/theme/css/pygments.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="/theme/tipuesearch/tipuesearch.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="/theme/css/elegant.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="/theme/css/custom.css" media="screen">
+    </head>
+    <body>
+        <div id="content-sans-footer">
+        <div class="navbar navbar-static-top">
+            <div class="navbar-inner">
+                <div class="container-fluid">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <a class="brand" href="/"><span class=site-name>代码火花</span></a>
+                    <div class="nav-collapse collapse">
+                        <ul class="nav pull-right top-menu">
+                            <li ><a href="">Home</a></li>
+                            <li ><a href="/categories.html">Categories</a></li>
+                            <li ><a href="/tags.html">Tags</a></li>
+                            <li ><a href="/archives.html">Archives</a></li>
+                            <li><form class="navbar-search" action="/search.html" onsubmit="return validateForm(this.elements['q'].value);"> <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input"></form></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span1"></div>
+                <div class="span10">
+<article>
+<div class="row-fluid">
+    <header class="page-header span10 offset2">
+    <h1><a href="/han-shu-xiang-ying-shi-shi-jian-chu-li-bian-cheng.html"> 函数响应式事件处理编程  </a></h1>
+    </header>
+</div>
+
+<div class="row-fluid">
+        <div class="span8 offset2 article-content">
+
+            
+            <p>翻译: By rustup(欢迎转载分享,请注明出处)</p>
+<p>原文: <a href="http://blog.ebopp.de/blog/2015/01/26/frp-in-rust/" target="_blank"> Functional reactive event handling </a></p>
+<p>事件处理是相当复杂,有时候甚至会十分的凌乱的编程工作. <a href="https://en.wikipedia.org/wiki/Functional_reactive_programming" target="_blank">函数响应式编程(FRP)</a>,是有希望能解决所有经典观察者模式问题的事件处理编程范式. 当第一次从 Stephen Blackheath 的<a href="https://www.youtube.com/watch?v=gaG3tIb3Lbk" target="_blank" >演讲</a>听到这这个感念的时候, 我是十分好奇的. 这种模型使得事件处理比我想象的要容易的多.</p>
+<p><a href="https://github.com/SodiumFRP/sodium" target="_blank" Sodium </a>(Stephen Blackheath 和他的小伙伴们一起实现的库) 尝试通过一致 API 提供跨语言的实现. 我打算通过自己所学到的 Rust 语言来开始开发 FRP 原型.</p>
+<p>经过努力,我实现了 Carboxyl 库, 挂在 <a href="https://github.com/aepsil0n/carboxyl" target="_blank"> github </a>, <a href="https://crates.io/crates/carboxyl" target="_blank"> crates.io</a> 和 <a href="http://www.rust-ci.org/aepsil0n/carboxyl/doc/carboxyl/" target="_blank"> rustci </a> 上面. 你可以把它当作是 Sodium 大部分的功能的 Rust 实现. 尽管现在还没有进行改进. 两周前当还是个粗糙的原型的时候(大部分是并发问题)我发布了它. 现在为止, 可以说基本的业务都运行的很正确. 它还缺少一些方便的函数, 目前正在逐一添加. 最终他可能编程 Sodium 的 Rust 版本实现. 不过现在下断言还为时尚早.</p>
+<p>文档内容已经有所更新, 熟悉 FRP 的人应该能够很容易理解. 该文和文档是正交的, 会在某个时候写入文档. 我回总结所学到的基本 FRP 概念, 并使用这个库举例说明它在实际程序中的用法. 这主要为了减缓在 Rust 中使用 RFP 的学习难度曲线.</p>
+<h2>基本原理</h2>
+<p>这种模式的思路是非常简单的. 响应式编程在本质上很接近电子表格: 有许多格, 每格有随着时间和别的格的变动而改变的值不值. 或者更通俗的说, 他们随着事件而且改变. 事件可以是鼠标点击, 按键被按下或者释放.</p>
+<p>FRP 借助函数式编程来抽象概念. 可以把一个事件的处理当成流图, 事件会在某时刻波及大量因变量(dependent quantities)(就像电子表格中表格的一样)</p>
+<p>FRP 库仔细管理通过流图传送的事件, 而程序员只需要使用库原型设计好流图,鉴于原型构思的非常好, 也可以使用其它库组件.</p>
+<p>具体而言,在 Sodium 和 Carboxyl 有两种基本的类型. 流 (stream) 是一系列分离的事件(events). 格子(cell) 是随时间改变的值. 他们有很多方法以便于和函数以及别的 streams 和 cells 协同.(下面的地方流和格子不译,以免错误理解)</p>
+<p>(Sodium 过去一直称呼他们为 event 和 behaviour 类型直到最近才转变过来) 你可以在关于 FRP 的论文中见到这些称呼. 我已经在 Carboxyl 中修改为最新的术语.</p>
+<h2>创建 stream</h2>
+<p>我们要采取一些方法为库提供事件, 这里引入 Sink (接收器)</p>
+<div class="highlight"><pre><span class="n">use</span> <span class="n">carboxyl</span><span class="o">::</span><span class="n">Sink</span><span class="p">;</span>
+<span class="n">let</span> <span class="n">sink</span> <span class="o">=</span> <span class="n">Sink</span><span class="o">::</span><span class="n">new</span><span class="p">();</span>
+</pre></div>
+
+
+<p>之后可以从它里面衍生出 streams</p>
+<div class="highlight"><pre><span class="n">let</span> <span class="n">stream</span> <span class="o">=</span> <span class="n">sink</span><span class="p">.</span><span class="n">stream</span><span class="p">();</span>
+</pre></div>
+
+
+<p>该 stream 会包含所有的发送给 sink 的事件. 因此当我们使用 sink.send(4), 事件会被传递到下游 (downstream). 可以通过迭代 stream 中的事件来进行观察.</p>
+<div class="highlight"><pre><span class="n">let</span> <span class="n">mut</span> <span class="n">iter</span> <span class="o">=</span> <span class="n">stream</span><span class="p">.</span><span class="n">iter</span><span class="p">();</span>
+<span class="n">stream</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="mi">12</span><span class="p">);</span>
+<span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="n">iter</span><span class="p">.</span><span class="n">next</span><span class="p">(),</span> <span class="n">Some</span><span class="p">(</span><span class="mi">12</span><span class="p">));</span>
+</pre></div>
+
+
+<p>注意迭代器只能包含在创建迭代器之后发送给 stream 的事件. 这就是为什么没有在迭代中找到 4. 如果现在没有事件发送到该 stream ,迭代会阻塞.</p>
+<p>在随后的例子中, 我们假设用到的 sink 和交互的 stream 已经被创建.</p>
+<h2>操纵 streams</h2>
+<p>有三种只能在 streams 上工作的语法原型: map, filter, 和 merge. 如果经常和 Rust 迭代适配器打交道,就会对前两种比较熟悉.</p>
+<p>map 创建新的 stream, 接受上游(upstream)事件,调用函数传递结果.</p>
+<div class="highlight"><pre><span class="n">let</span> <span class="n">squares</span> <span class="o">=</span> <span class="n">stream</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span><span class="p">);</span>
+<span class="n">let</span> <span class="n">mut</span> <span class="n">iter</span> <span class="o">=</span> <span class="n">squares</span><span class="p">.</span><span class="n">iter</span><span class="p">();</span>
+<span class="n">sink</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+<span class="c1">//send(3) 触发 map 调用,返回新的 stream</span>
+<span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="n">squares_iter</span><span class="p">.</span><span class="n">next</span><span class="p">(),</span> <span class="n">Some</span><span class="p">(</span><span class="mi">9</span><span class="p">));</span>
+</pre></div>
+
+
+<p>filter 运行在接受事件为 Option<T> 的 stream 上, 当事件为 Some(...)的时候才会传递"内部"结果.</p>
+<div class="highlight"><pre><span class="n">let</span> <span class="n">filtered</span> <span class="o">=</span> <span class="n">stream</span><span class="p">.</span><span class="n">filter</span><span class="p">();</span>
+<span class="n">let</span> <span class="n">mut</span> <span class="n">iter</span> <span class="o">=</span> <span class="n">filtered</span><span class="p">.</span><span class="n">iter</span><span class="p">();</span>
+<span class="n">sink</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">None</span><span class="p">);</span> <span class="c1">// ignored</span>
+<span class="n">sind</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">Some</span><span class="p">(</span><span class="mi">3</span><span class="p">));</span> <span class="c1">// converted to 3</span>
+<span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="n">iter</span><span class="p">.</span><span class="n">next</span><span class="p">(),</span> <span class="n">Some</span><span class="p">(</span><span class="mi">3</span><span class="p">));</span>
+</pre></div>
+
+
+<p>filter 不同于 Rust 标准库 iterator 的 <a href="http://doc.rust-lang.org/1.0.0-beta.3/std/iter/trait.Iterator.html#method.filter" target="_blank"> filter </a> . 为了使用方便, 另有一个基于断言的 filter_with 方法.</p>
+<p>可以同时合并两个相同类型的 stream</p>
+<div class="highlight"><pre><span class="n">let</span> <span class="n">merged</span> <span class="o">=</span> <span class="n">stream1</span><span class="p">.</span><span class="n">merge</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream2</span><span class="p">);</span>
+<span class="n">let</span> <span class="n">mut</span> <span class="n">iter</span> <span class="o">=</span> <span class="n">merged</span><span class="p">.</span><span class="n">iter</span><span class="p">();</span>
+<span class="n">sink1</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="n">iter</span><span class="p">.</span><span class="n">next</span><span class="p">(),</span> <span class="n">Some</span><span class="p">(</span><span class="mi">2</span><span class="p">));</span>
+<span class="n">sink2</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+<span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="n">iter</span><span class="p">.</span><span class="n">next</span><span class="p">(),</span> <span class="n">Some</span><span class="p">(</span><span class="mi">4</span><span class="p">));</span>
+</pre></div>
+
+
+<p>使用这些原型就可以进行相当多的事件处理.</p>
+<h1>持有 cell 中的值</h1>
+<p>stream 不会持有经它传播的 events.这些 cells 迟早会用到, 一个 cell 知道它当前的值, 可以通过持有 stream 最后的 event 来轻松的创建 cell.</p>
+<div class="highlight"><pre><span class="n">let</span> <span class="n">cell</span> <span class="o">=</span> <span class="n">stream</span><span class="p">.</span><span class="n">hold</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+</pre></div>
+
+
+<p>当 stream 还没有接收到任何 event 的时候, cell 使用形参做初始化值. 当前的 cell 的值, 可以在任何时间取样.</p>
+<div class="highlight"><pre><span class="c1">// Initial value</span>
+<span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="k">cell</span><span class="p">.</span><span class="n">sample</span><span class="p">(),</span> <span class="mh">3</span><span class="p">);</span>
+<span class="c1">// Send in a new value</span>
+<span class="n">sink</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="o">-</span><span class="mh">6</span><span class="p">);</span>
+<span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="k">cell</span><span class="p">.</span><span class="n">sample</span><span class="p">(),</span> <span class="o">-</span><span class="mh">6</span><span class="p">);</span>
+</pre></div>
+
+
+<p>甚至可以通过使用 lift! 宏来操作 cells,它能类似操作普通的值一样在 cells 上面执行操作, 非常高效. </p>
+<div class="highlight"><pre><span class="n">let</span> <span class="n">product</span> <span class="o">=</span> <span class="n">lift</span><span class="o">!</span><span class="p">(</span><span class="o">|</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">|</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span><span class="p">,</span> <span class="n">cell_a</span><span class="p">,</span> <span class="n">cell_b</span><span class="p">);</span>
+<span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="n">product</span><span class="p">.</span><span class="n">sample</span><span class="p">(),</span> <span class="n">cell_a</span><span class="p">.</span><span class="n">sample</span><span class="p">()</span> <span class="o">*</span> <span class="n">cell_b</span><span class="p">.</span><span class="n">sample</span><span class="p">());</span>
+</pre></div>
+
+
+<p>lift! 当前只能在有最多四个参数的函数上执行, 不过对于实际问题已经足够了. (其实这个数目是可以提高)</p>
+<h1>快照(snapshot) 和 转换(switch)</h1>
+<p>有两种其它的原型可以操作 cells 和 streams. 可以使用新的 stream 为 cell 的值创建分离的快照. 新的 stream 把输入 stream 中的 events 组合成到一起. 并拥有当事件触发的时候获取到输入 stream 的 cell 的 值.</p>
+<p>看下面从文档中摘录的例子</p>
+<div class="highlight"><pre>    <span class="n">let</span> <span class="n">snapshot</span> <span class="o">=</span> <span class="n">cell1</span><span class="p">.</span><span class="n">snapshot</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream2</span><span class="p">);</span>
+    <span class="n">let</span> <span class="n">mut</span> <span class="n">iter</span> <span class="o">=</span> <span class="n">snapshot</span><span class="p">.</span><span class="n">iter</span><span class="p">();</span>
+
+    <span class="c1">// 更新 cell(来自输入 stream ) 不会出发快照流 </span>
+    <span class="n">sink1</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+
+    <span class="c1">//  但是发送事件到流的下游(即新的 stream)可以</span>
+    <span class="n">sink2</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="mf">3.0</span><span class="p">);</span>
+    <span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="n">iter</span><span class="p">.</span><span class="n">next</span><span class="p">(),</span> <span class="n">Some</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)));</span>
+</pre></div>
+
+
+<p>到目前为止, 所有展示的内容可归纳为可产生随时间变化的结果的静态流图. 另外有一种允许动态调整结构的原型叫做 switch , 它允许在有子 cell 的 cell 上面进行操作.
+就像切换 TV 频道一样(相信我, 这个例子是 Stephen Blackheath 的演讲中提到的).视频通过任意频道以图片为单元进行进行传播, 或者说视频是随着时间改变的图片.  而输入就是一系列来自遥控器的的按钮事件流(stream).</p>
+<p>使用之前讨论的原型, 可以创建一个包含许多图片 cell 的 cell 和最后切换的频道通信. 通过映射每一个按钮到和频道关联的图片 cell , 然后在一个 cell 中持有生成的 stream .</p>
+<div class="highlight"><pre><span class="c1">// news_channel:  Cell&lt;Image&gt;</span>
+<span class="c1">// movie_channel: Cell&lt;Image&gt;</span>
+<span class="c1">// button:        Stream&lt;Button&gt;</span>
+<span class="k">let</span> <span class="nl">active_channel:</span> <span class="n">Cell</span><span class="o">&lt;</span><span class="n">Cell</span><span class="o">&lt;</span><span class="n">Image</span><span class="o">&gt;&gt;</span> <span class="o">=</span>
+    <span class="c1">//map 会在触发时调用并返回新的 stream, 管理遥控器与频道的切换</span>
+    <span class="n">button</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">move</span> <span class="o">|</span><span class="n">b</span><span class="o">|</span> <span class="n">match</span> <span class="n">b</span> <span class="p">{</span>
+    <span class="n">Button</span><span class="o">::</span><span class="no">A</span> <span class="o">=&gt;</span> <span class="n">news_channel</span><span class="p">.</span><span class="n">clone</span><span class="p">(),</span>
+    <span class="n">Button</span><span class="o">::</span><span class="no">B</span> <span class="o">=&gt;</span> <span class="n">movie_channel</span><span class="p">.</span><span class="n">clone</span><span class="p">(),</span>
+<span class="p">})</span>
+<span class="p">.</span><span class="n">hold</span><span class="p">(</span><span class="n">default_channel</span><span class="p">);</span> <span class="c1">// hold 是创建的 cell 的默认值  </span>
+</pre></div>
+
+
+<p>switch 映射激活的 channel 到当前播放的的视频,并响应所有快速换台操作</p>
+<div class="highlight"><pre><span class="k">let</span> <span class="n">screen</span><span class="p">:</span> <span class="nx">Cell</span><span class="o">&lt;</span><span class="nb">Image</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nx">active_channel.switch</span><span class="p">();</span>
+</pre></div>
+
+
+<p>设置例子稍微有点冗长, 参照文档中一段说明 [http://www.rust-ci.org/aepsil0n/carboxyl/doc/carboxyl/struct.Cell.html#method.switch]
+原则上应该也能够在不同的 stream 中切换. 但是目前还没实现. </p>
+<h1>循环</h1>
+<p>往往可变的程序状态依赖它之前的值. 当前展示的函数式编程内容并不能不能够直接反映这个结论.需要自定义一个使用自身的 cell ,在 Rust 里面还不能够实现.(延迟函数式编程语言在这方面是没问题的)</p>
+<p>因此, 需要做一些额外的事情. Carboxyl 目前通过使用特殊的 cell 构造器提供了这个功能. 看一看如何实现一个能够计算输入 stream 中事件发生次数的 cell.</p>
+<div class="highlight"><pre><span class="k">let</span> <span class="n">counter</span><span class="p">:</span> <span class="nx">Cell</span><span class="o">&lt;</span><span class="nx">i32</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nx">Cell</span><span class="p">::</span><span class="nl">cyclic</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">|</span><span class="nx">counter</span><span class="o">|</span>
+    <span class="nx">counter.snapshot</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">stream</span><span class="p">)</span>
+        <span class="bp">.</span><span class="nb">map</span><span class="p">(</span><span class="o">|</span><span class="p">(</span><span class="nb">count</span><span class="p">,</span> <span class="nx">_</span><span class="p">)</span><span class="o">|</span> <span class="nb">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="p">);</span>
+</pre></div>
+
+
+<p>提供初始值和将可循环 cell 关联到 stream 的 closure. cell 会使用初始值持有该 strem , 并将事件反馈给 closure. closure 能够知道之前的 cell 值,一旦所有的事情已经被处理完毕, 就更新该值.</p>
+<p>我必须说明下, 本人对已经存在的这些 API 不是特别满意. 更好的做法是抛开初始值.并提供一个能够在概念上关联可循环 cell 到自身的 closure. 然而有一些琐碎的实现问题. 当使用的时候, 应当考虑到这些改进.</p>
+<h1>结束致辞</h1>
+<p>在 Carboxyl 中重度使用了自动引用计数, 锁以及回调机制的 trait 对象. 同一时间只使用一个事务和全局锁来保证线程安全.</p>
+<p>目前还需要做更多的优化工作, 但是已经是一个已经能干活儿的 FRP 实现. 在不打破当前实现的基础上,加入更快更并行的机制.软件事物内存(Software Transactional Memory)看起来是一个好的解决办法,我回在随后关注这些.</p>
+<p>从概念上说,函数响应式编程相对于传统事件分发机制是跳跃性的进步. 核心思想是一种函数式的概念. 因此最好不要尝试使用在 FRP 中没有的可变状态. 函数相应式编程并不能一劳永逸解决所有问题. 可以逐步的将函数式相应编程引进工程.</p>
+<p>个人已经有许多实际的使用函数响应式编程的经验, 并且非常期待在视频游戏中使用 FRP. 我会些一些后续文章介绍游戏循环, I/O 接口, 写函数式模拟器等等.</p>
+<p>非常期待将来有用 Rust 实现的全面的函数响应式游戏框架. 这需要不同程度的合作, 有许多问题需要解决. 不知道 Piston 会不会朝这个方向发展.  多亏 Rust 库都是通过模块化实现, 现在已经有大量优秀的组件. 基于此, 函数响应式编程模型才能被开发出来.</p>
+<p>相关阅读 : <a href="http://www.infoq.com/cn/news/2014/07/reactive-programming" target="_blank"> 关于响应式编程你可能错过的信息</a></p>
+            
+            
+            <hr/>
+        </div>
+        <section>
+        <div class="span2" style="float:right;font-size:0.9em;">
+            <h4>Published</h4>
+            <time pubdate="pubdate" datetime="2015-04-26T00:00:00">Apr 26, 2015</time>
+            <h4>Category</h4>
+            <a class="category-link" href="/categories.html#functional-ref">functional</a>
+
+
+	    <!-- 多说评论框 start -->
+	    <div class="ds-thread" data-thread-key="1" data-title="Rust Means Never Having to Close a Socket" data-url="Rust Means Never Having to Close a Socket"></div>
+	    <!-- 多说评论框 end -->
+	    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	    <script type="text/javascript">
+	    var duoshuoQuery = {short_name:"rustup"};
+(function() {
+ var ds = document.createElement('script');
+ ds.type = 'text/javascript';ds.async = true;
+ ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+ ds.charset = 'UTF-8';
+ (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+ })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+<h4>Contact</h4>
+    <a href="#" title="My You can add links in your config file Profile" class="sidebar-social-links" target="_blank">
+    <i class="fa fa-you can add links in your config file sidebar-social-links"></i></a>
+    <a href="#" title="My Another social link Profile" class="sidebar-social-links" target="_blank">
+    <i class="fa fa-another social link sidebar-social-links"></i></a>
+        </div>
+        </section>
+</div>
+</article>
+                </div>
+                <div class="span1"></div>
+            </div>
+        </div>
+        <div id="push"></div>
+    </div>
+<footer>
+<div id="footer">
+    <ul class="footer-content">
+        <li class="elegant-power">Powered by <a href="http://getpelican.com/" title="Pelican Home Page">Pelican</a>. Theme: <a href="http://oncrashreboot.com/pelican-elegant" title="Theme Elegant Home Page">Elegant</a> by <a href="http://oncrashreboot.com" title="Talha Mansoor Home Page">Talha Mansoor</a></li>
+    </ul>
+</div>
+</footer>            <script src="http://code.jquery.com/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+        <script>
+            function validateForm(query)
+            {
+                return (query.length > 0);
+            }
+        </script>
+
+    
+    </body>
+    <!-- Theme: Elegant built for Pelican
+    License : http://oncrashreboot.com/pelican-elegant -->
+</html>

@@ -13,23 +13,22 @@
 <meta name="keywords" content=", rust, " />
 
 <meta property="og:title" content="Rust Means Never Having to Close a Socket "/>
-<meta property="og:url" content="http://www.rustup.com/rust-means-never-having-to-close-a-socket.html" />
-<meta property="og:description" content="翻译: By rustup(欢迎转载分享,请注明出处) 原文: http://blog.skylight.io/rust-means-never-having-to-close-a-socket Rust 语言最酷炫的功能是它能够在安全(无段错误)和高性能的同时,仍然能够为使用者进行自动资源管理. 作为一种与众不同的语言, 我们在此讨论的问题可能会很晦涩难懂. 主要围绕一下几点: Rust 和使用带垃圾自动回收机制的语言相同的地方: 永远不需要显式的进行内存释放. Rust 不同于垃圾自动回收机制的语言地方: 永远(注1)不需要显式对文件,套接字和锁进行释放. Rust 这两种特性的实现, 不会引发运行时开销, 也不牺牲安全性. 如果您曾经泄漏了文件或者套接字,或是使用某种抽象机制泄漏资源,你就会意识到这是一个很大的问题. 你期望有某种机制能免除这种&#34;悬垂资源&#34;的内存漏洞,同时也不用担心在显式关闭套接字出现问题. 本文告诉你一个双全法. 如果你有垃圾回收语言使用经历,你应当关注本文的资源管理方面. 如果你使用的是c/c++这类抽象层次较低的语言,你可能对安全方面的内容更感兴趣. Rust 集大部分语言的优点,并严格保证这些优秀功能的可使用性. 实际上 ..." />
+<meta property="og:url" content="/rust-means-never-having-to-close-a-socket.html" />
+<meta property="og:description" content="翻译: By rustup(欢迎转载分享,请注明出处) 原文: rust-means-never-having-to-close-a-socket Rust 语言最酷炫的功能是它能够在安全(无段错误)和高性能的同时,仍然能够为使用者进行自动资源管理. 作为一种与众不同的语言, 我们在此讨论的问题可能会很晦涩难懂. 主要围绕一下几点: Rust 和使用带垃圾自动回收机制的语言相同的地方: 永远不需要显式的进行内存释放. Rust 不同于垃圾自动回收机制的语言地方: 永远(注1)不需要显式对文件,套接字和锁进行释放. Rust 这两种特性的实现, 不会引发运行时开销, 也不牺牲安全性. 如果您曾经泄漏了文件或者套接字,或是使用某种抽象机制泄漏资源,你就会意识到这是一个很大的问题. 你期望有某种机制能免除这种&#34;悬垂资源&#34;的内存漏洞,同时也不用担心在显式关闭套接字出现问题. 本文告诉你一个双全法. 如果你有垃圾回收语言使用经历,你应当关注本文的资源管理方面. 如果你使用的是c/c++这类抽象层次较低的语言,你可能对安全方面的内容更感兴趣. Rust 集大部分语言的优点,并严格保证这些优秀功能的可使用性. 实际上,这样梦幻般的提升了语言的全面性. ownership 系统 Rust ..." />
 <meta property="og:site_name" content="代码火花" />
 <meta property="og:article:author" content="hell@world" />
 <meta property="og:article:published_time" content="2015-04-26T00:00:00" />
 <meta name="twitter:title" content="Rust Means Never Having to Close a Socket ">
-<meta name="twitter:description" content="翻译: By rustup(欢迎转载分享,请注明出处) 原文: http://blog.skylight.io/rust-means-never-having-to-close-a-socket Rust 语言最酷炫的功能是它能够在安全(无段错误)和高性能的同时,仍然能够为使用者进行自动资源管理. 作为一种与众不同的语言, 我们在此讨论的问题可能会很晦涩难懂. 主要围绕一下几点: Rust 和使用带垃圾自动回收机制的语言相同的地方: 永远不需要显式的进行内存释放. Rust 不同于垃圾自动回收机制的语言地方: 永远(注1)不需要显式对文件,套接字和锁进行释放. Rust 这两种特性的实现, 不会引发运行时开销, 也不牺牲安全性. 如果您曾经泄漏了文件或者套接字,或是使用某种抽象机制泄漏资源,你就会意识到这是一个很大的问题. 你期望有某种机制能免除这种&#34;悬垂资源&#34;的内存漏洞,同时也不用担心在显式关闭套接字出现问题. 本文告诉你一个双全法. 如果你有垃圾回收语言使用经历,你应当关注本文的资源管理方面. 如果你使用的是c/c++这类抽象层次较低的语言,你可能对安全方面的内容更感兴趣. Rust 集大部分语言的优点,并严格保证这些优秀功能的可使用性. 实际上 ...">
+<meta name="twitter:description" content="翻译: By rustup(欢迎转载分享,请注明出处) 原文: rust-means-never-having-to-close-a-socket Rust 语言最酷炫的功能是它能够在安全(无段错误)和高性能的同时,仍然能够为使用者进行自动资源管理. 作为一种与众不同的语言, 我们在此讨论的问题可能会很晦涩难懂. 主要围绕一下几点: Rust 和使用带垃圾自动回收机制的语言相同的地方: 永远不需要显式的进行内存释放. Rust 不同于垃圾自动回收机制的语言地方: 永远(注1)不需要显式对文件,套接字和锁进行释放. Rust 这两种特性的实现, 不会引发运行时开销, 也不牺牲安全性. 如果您曾经泄漏了文件或者套接字,或是使用某种抽象机制泄漏资源,你就会意识到这是一个很大的问题. 你期望有某种机制能免除这种&#34;悬垂资源&#34;的内存漏洞,同时也不用担心在显式关闭套接字出现问题. 本文告诉你一个双全法. 如果你有垃圾回收语言使用经历,你应当关注本文的资源管理方面. 如果你使用的是c/c++这类抽象层次较低的语言,你可能对安全方面的内容更感兴趣. Rust 集大部分语言的优点,并严格保证这些优秀功能的可使用性. 实际上,这样梦幻般的提升了语言的全面性. ownership 系统 Rust ...">
 
         <title>Rust Means Never Having to Close a Socket  · 代码火花
 </title>
         <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
         <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.1/css/font-awesome.css" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="http://www.rustup.com/theme/css/pygments.css" media="screen">
-        <link rel="stylesheet" type="text/css" href="http://www.rustup.com/theme/tipuesearch/tipuesearch.css" media="screen">
-        <link rel="stylesheet" type="text/css" href="http://www.rustup.com/theme/css/elegant.css" media="screen">
-        <link rel="stylesheet" type="text/css" href="http://www.rustup.com/theme/css/custom.css" media="screen">
-        <link href="http://www.rustup.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="代码火花 - Full Atom Feed" />
+        <link rel="stylesheet" type="text/css" href="/theme/css/pygments.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="/theme/tipuesearch/tipuesearch.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="/theme/css/elegant.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="/theme/css/custom.css" media="screen">
     </head>
     <body>
         <div id="content-sans-footer">
@@ -41,14 +40,14 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </a>
-                    <a class="brand" href="http://www.rustup.com/"><span class=site-name>代码火花</span></a>
+                    <a class="brand" href="/"><span class=site-name>代码火花</span></a>
                     <div class="nav-collapse collapse">
                         <ul class="nav pull-right top-menu">
-                            <li ><a href="http://www.rustup.com">Home</a></li>
-                            <li ><a href="http://www.rustup.com/categories.html">Categories</a></li>
-                            <li ><a href="http://www.rustup.com/tags.html">Tags</a></li>
-                            <li ><a href="http://www.rustup.com/archives.html">Archives</a></li>
-                            <li><form class="navbar-search" action="http://www.rustup.com/search.html" onsubmit="return validateForm(this.elements['q'].value);"> <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input"></form></li>
+                            <li ><a href="">Home</a></li>
+                            <li ><a href="/categories.html">Categories</a></li>
+                            <li ><a href="/tags.html">Tags</a></li>
+                            <li ><a href="/archives.html">Archives</a></li>
+                            <li><form class="navbar-search" action="/search.html" onsubmit="return validateForm(this.elements['q'].value);"> <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input"></form></li>
                         </ul>
                     </div>
                 </div>
@@ -61,7 +60,7 @@
 <article>
 <div class="row-fluid">
     <header class="page-header span10 offset2">
-    <h1><a href="http://www.rustup.com/rust-means-never-having-to-close-a-socket.html"> Rust Means Never Having to Close a Socket  </a></h1>
+    <h1><a href="/rust-means-never-having-to-close-a-socket.html"> Rust Means Never Having to Close a Socket  </a></h1>
     </header>
 </div>
 
@@ -70,7 +69,7 @@
 
             
             <p>翻译: By rustup(欢迎转载分享,请注明出处)</p>
-<p>原文: <a href="http://blog.skylight.io/rust-means-never-having-to-close-a-socket">http://blog.skylight.io/rust-means-never-having-to-close-a-socket</a></p>
+<p>原文: <a href="http://blog.skylight.io/rust-means-never-having-to-close-a-socket" target="_blank">rust-means-never-having-to-close-a-socket</a></p>
 <p>Rust 语言最酷炫的功能是它能够在安全(无段错误)和高性能的同时,仍然能够为使用者进行自动资源管理.
 作为一种与众不同的语言, 我们在此讨论的问题可能会很晦涩难懂. 主要围绕一下几点:</p>
 <ul>
@@ -232,8 +231,8 @@ Rust 集大部分语言的优点,并严格保证这些优秀功能的可使用�
 
 
 <p>上文提到, 当一个函数借用了一个对象, 它只能在函数执行的时候使用这个对象. 但是这个函数明显违背该原则并返回该对象.
-该函数能够正常运行的原因是, path 函数的调用着明显拥有该对象, 实际上正是调用 path 的函数把 Tempfile 对象借用给了 path 函数. 这种情况下, Rust 编译器回保证返回的 Path(Tempdir 对象) 不会比 Tempfile 的生存期更长</p>
-<p>这意味着你可以返回从调用函数 borrowed 的内容, Rust 回仔细的追踪检查原始的持有者. 看一个例子：</p>
+该函数能够正常运行的原因是, path 函数的调用着明显拥有该对象, 实际上正是调用 path 的函数把 Tempfile 对象借用给了 path 函数. 这种情况下, Rust 编译器会保证返回的 Path(Tempdir 对象) 不会比 Tempfile 的生存期更长</p>
+<p>这意味着你可以返回从调用函数 borrowed 的内容, Rust 会仔细的追踪检查原始的持有者. 看一个例子：</p>
 <div class="highlight"><pre><span class="n">fn</span> <span class="n">hello</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">str</span> <span class="p">{</span>
     <span class="n">let</span> <span class="n">person</span> <span class="o">=</span> <span class="n">Person</span> <span class="p">{</span>
         <span class="nl">first:</span> <span class="s">&quot;Yehuda&quot;</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span>
@@ -265,11 +264,11 @@ Rust 集大部分语言的优点,并严格保证这些优秀功能的可使用�
 <h2>工效</h2>
 <p>初见之下,所有的地方都要使用到 ownership 机制, 这样会影响使用 Rust 的工作效率.事实上也确实如此.</p>
 <p>但是有很多因素, 让这样做带来的好处远大于表面上看来引入的复杂度.</p>
-<p>首先,一大堆真实世界代码都回符合这种 borrow/lend 模型. 写了越来越多的 Rust 代码之后, 我突然意识到 Ruby 这和些 Ruby 的代码具有一样的模式: 函数制造对象, 传递给子函数.子函数操作具体的工作, 然后返回.</p>
+<p>首先,一大堆真实世界代码都会符合这种 borrow/lend 模型. 写了越来越多的 Rust 代码之后, 我突然意识到 Ruby 这和些 Ruby 的代码具有一样的模式: 函数制造对象, 传递给子函数.子函数操作具体的工作, 然后返回.</p>
 <p>这样,反反复复, 这种区别在(使用传递进来参数的函数和长时间持有对象的函数) Rust 就会很明显. 区分了函数签名,检查错误, 就可以获得 Rust 提供的安全机制.</p>
 <p>和 C++ 相比, C++ 在大部分场合会显式的进行区分, 但是不进行错误检查. GC 类型的语言不会区分 'transfered' 和 'lent' 两种形参机制.</p>
-<p>这意味着 Rust 程序员回很快的学将 borrowing 作为默认的函数声明方式. 这样会大幅度减轻系统的运行负载.</p>
-<p>第二, 使用 Rust 一段时间后, 大部分人回发现 borrow checker 错误实际上是警告他们一些真正存在的严重的却又很难发现的问题. 之后 borrow checker 自然的推动你的走在更难犯错误的编程模型道路上.</p>
+<p>这意味着 Rust 程序员会很快的学将 borrowing 作为默认的函数声明方式. 这样会大幅度减轻系统的运行负载.</p>
+<p>第二, 使用 Rust 一段时间后, 大部分人会发现 borrow checker 错误实际上是警告他们一些真正存在的严重的却又很难发现的问题. 之后 borrow checker 自然的推动你的走在更难犯错误的编程模型道路上.</p>
 <p>第三, 我个人觉得, 对对象有清晰的 ownership 会提高对程序的逻辑理解. 普遍的降低引入灾难性的难追踪内存泄漏的可能性.</p>
 <p>最后, 自动的资源管理机制, 一方面提高了效率, 一方面又能保证不发生资源泄漏(在我懒得调用释放函数的时候), 也不会烧坏水壶(在我不小心多次调用释放函数的时候).</p>
 <p>除了 C++ 程序员外之外,很少有程序员会擅长处理自动资源管理机制.而且这种机制经常把我们揍得嚎啕大哭, 以及让我们觉得它并不是特别实用的机制. Rust 改变了自动资源管理传统机制需要折衷的做法, 并极力的移走你脑海里面的那个低低埋怨的声音: 如果我不需要它, 它对我又有什么用呢'.</p>
@@ -279,11 +278,11 @@ Rust 集大部分语言的优点,并严格保证这些优秀功能的可使用�
 <p>以我的经验看来, 只要你习惯了使用 ownership 范式, 就很少使用会需要使用 Rc 指针. 比如整个 Cargo 核心代码没有引用计数指针, 仅仅只有一个自动引用计数指针(为了并行编译在多线程之间共享锁)</p>
 <p>我认为 ownership 和 lending 很好的映射了大部分真是编程模型. 有一些场景无法适用, 但一般稍微的改进代码结构就能够编译. 这样, 在内存和资源上的泄漏很难发生,代码的清晰度也会提高.</p>
 <p>如果不是这样的话, 我猜测有经验的 Rust 开发者也会经常的使用 Rc .</p>
-<p>总而言之, 还是回有一些场景需要引用计数, 甚至是 gc. Rust 的智能指针系统允许 Rc 指针透明操作一些 ownership 和 borrowing 系统. 当引用计数减为 0 析构器会自动执行.(这样回有明显的自动变量推导和运行时性能消耗)</p>
+<p>总而言之, 还是会有一些场景需要引用计数, 甚至是 gc. Rust 的智能指针系统允许 Rc 指针透明操作一些 ownership 和 borrowing 系统. 当引用计数减为 0 析构器会自动执行.(这样会有明显的自动变量推导和运行时性能消耗)</p>
 <h2>其它语言中的机制</h2>
-<p>垃圾自动回收语言经常回提供一些措施帮助程序员处理手动资源管理问题. 在许多现代语言中, 并不需要显式的调用 close 函数, 但是需要在语言构造资源的时候绑定到上下文, 并在操作完毕释放.
+<p>垃圾自动回收语言经常会提供一些措施帮助程序员处理手动资源管理问题. 在许多现代语言中, 并不需要显式的调用 close 函数, 但是需要在语言构造资源的时候绑定到上下文, 并在操作完毕释放.
 看一些例子, 然后讨论下这种做法的劣势.</p>
-<p>在 Ruby 中, 可以使用块来指定资源使用的域.一旦块返回, 资源就回清理掉.</p>
+<p>在 Ruby 中, 可以使用块来指定资源使用的域.一旦块返回, 资源就会清理掉.</p>
 <div class="highlight"><pre><span class="n">File</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;/etc/passwd&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">file</span><span class="o">|</span>
 <span class="cp"># use the file</span>
 <span class="n">end</span>
@@ -315,10 +314,10 @@ Rust 集大部分语言的优点,并严格保证这些优秀功能的可使用�
 <p>几乎不可能对已经存在的结构事后添加添加资源释放逻辑, 因为客户端已经使用普通的的创建资源 API. 这样一来从上层对象中提取资源变得很困难, 因为资源很可能已经在 API 中泄漏了.</p>
 </li>
 <li>
-<p>基于 block 的方法(Ruby 和 Python, 不包含 Go), 带来了右倾(rightward drift)的问题. 每次处理资源的时候, 都必须创建一个新的上下文( scope ).这样的处理在 Ruby(Ruby 有很好的 blocks机制) 和 Python(有语言级别的上下文构造)很烦, 在 JavaScript 中会引入一个严重的问题, 因为引入新的上下文 ( scope ) 回妨碍返回以及循环退出.</p>
+<p>基于 block 的方法(Ruby 和 Python, 不包含 Go), 带来了右倾(rightward drift)的问题. 每次处理资源的时候, 都必须创建一个新的上下文( scope ).这样的处理在 Ruby(Ruby 有很好的 blocks机制) 和 Python(有语言级别的上下文构造)很烦, 在 JavaScript 中会引入一个严重的问题, 因为引入新的上下文 ( scope ) 会妨碍返回以及循环退出.</p>
 </li>
 <li>
-<p>这些方法(包括 Go defer)需要为资源的处理生成指定的词法上下文. 每当需要传递资源到多个函数的时候, 这样的编程方式就会不便利甚至不可实现. 实际上这只是在没有完美的对象管理机制的时候,强制使用基于上下文的 ownership 系统. 一旦开始调用其它使用了该资源的方法,当最初的函数关闭资源的时候.这些调用它的函数函数就回挂掉在使用资源的地方,很容易就陷入琐碎的的悬垂资源的的漏洞.</p>
+<p>这些方法(包括 Go defer)需要为资源的处理生成指定的词法上下文. 每当需要传递资源到多个函数的时候, 这样的编程方式就会不便利甚至不可实现. 实际上这只是在没有完美的对象管理机制的时候,强制使用基于上下文的 ownership 系统. 一旦开始调用其它使用了该资源的方法,当最初的函数关闭资源的时候.这些调用它的函数函数就会挂掉在使用资源的地方,很容易就陷入琐碎的的悬垂资源的的漏洞.</p>
 </li>
 </ul>
 <p>Rust 的自动资源管理中几乎解决了所有的这些问题</p>
@@ -330,14 +329,14 @@ Rust 集大部分语言的优点,并严格保证这些优秀功能的可使用�
 <p>自动资源管理和自动内存管理机制一样, 没有缩进要求.少了烦心,保护周围语意不变.</p>
 </li>
 <li>
-<p>在 Rust 中, 可以像任何其他对象一样传递资源.如果一觉了 ownership 到一个新的上下文(scope), 当新的上下文(scope)结束的时候资源就会关闭. 其它情况下, borrowing 系统回保证不会出现悬垂资源和悬垂内存.</p>
+<p>在 Rust 中, 可以像任何其他对象一样传递资源.如果一觉了 ownership 到一个新的上下文(scope), 当新的上下文(scope)结束的时候资源就会关闭. 其它情况下, borrowing 系统会保证不会出现悬垂资源和悬垂内存.</p>
 </li>
 </ul>
-<p>简言之,这种使用内存和资源的系统回带来很多真实的好处.</p>
+<p>简言之,这种使用内存和资源的系统会带来很多真实的好处.</p>
 <p>Rust 的 ownership 用起来不会像垃圾回收那样无脑简单. 我只是说 Rust 智能的减少了很多消耗,甚至在一些情况下工作效能上比垃圾回收语言有所提高.
-作为学习它的回报, 你得到了一个足够快,能够直接操作内存, 并保证完全安全的语言. 正因为如此, 使用它能够让所有的高级语言用户进行底层代码开发. 这是令我着迷的. 交流使我们从彼此那里学到更多的东西.</p>
+作为学习它的会报, 你得到了一个足够快,能够直接操作内存, 并保证完全安全的语言. 正因为如此, 使用它能够让所有的高级语言用户进行底层代码开发. 这是令我着迷的. 交流使我们从彼此那里学到更多的东西.</p>
 <p>(原文广告)你想学习如何提高 Rails app 的性能吗, 注册 30 天免费使用的 <a href="https://www.skylight.io" title="Skylight">Skylight</a> 账号, 不需要银行卡.</p>
-<p>注: 当我说 '永远' 的时候, 我指的是非常非常少有的情况. 在垃圾回收语言中,有时会需要直接管理内存. 在 Rust, 偶尔会直接处理内存. 这两种情况,语言代为管理资源是主流,也是一种重要的编程方式.</p>
+<p>注: 当我说 '永远' 的时候, 我指的是非常非常少有的情况. 在垃圾回收语言中,有时会需要直接管理内存. 在 Rust, 偶尔会直接处理内存. 这两种情况中,语言代为管理资源是主流,也是一种重要的编程方式.</p>
             
             
             <hr/>
@@ -347,7 +346,7 @@ Rust 集大部分语言的优点,并严格保证这些优秀功能的可使用�
             <h4>Published</h4>
             <time pubdate="pubdate" datetime="2015-04-26T00:00:00">Apr 26, 2015</time>
             <h4>Category</h4>
-            <a class="category-link" href="http://www.rustup.com/categories.html#rust-ref">rust</a>
+            <a class="category-link" href="/categories.html#rust-ref">rust</a>
 
 
 	    <!-- 多说评论框 start -->
