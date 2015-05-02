@@ -72,7 +72,7 @@
 <p>原文: <a href="http://blog.ebopp.de/blog/2015/01/26/frp-in-rust/" target="_blank"> Functional reactive event handling </a></p>
 <p>事件处理是相当复杂,有时候甚至会十分的凌乱的编程工作. <a href="https://en.wikipedia.org/wiki/Functional_reactive_programming" target="_blank">函数响应式编程(FRP)</a>,是有希望能解决所有经典观察者模式问题的事件处理编程范式. 当第一次从 Stephen Blackheath 的<a href="https://www.youtube.com/watch?v=gaG3tIb3Lbk" target="_blank" >演讲</a>听到这这个感念的时候, 我是十分好奇的. 这种模型使得事件处理比我想象的要容易的多.</p>
 <p><a href="https://github.com/SodiumFRP/sodium" target="_blank" Sodium </a>(Stephen Blackheath 和他的小伙伴们一起实现的库) 尝试通过一致 API 提供跨语言的实现. 我打算通过自己所学到的 Rust 语言来开始开发 FRP 原型.</p>
-<p>经过努力,我实现了 Carboxyl 库, 挂在 <a href="https://github.com/aepsil0n/carboxyl" target="_blank"> github </a>, <a href="https://crates.io/crates/carboxyl" target="_blank"> crates.io</a> 和 <a href="http://www.rust-ci.org/aepsil0n/carboxyl/doc/carboxyl/" target="_blank"> rustci </a> 上面. 你可以把它当作是 Sodium 大部分的功能的 Rust 实现. 尽管现在还没有进行改进. 两周前当还是个粗糙的原型的时候(大部分是并发问题)我发布了它. 现在为止, 可以说基本的业务都运行的很正确. 它还缺少一些方便的函数, 目前正在逐一添加. 最终他可能编程 Sodium 的 Rust 版本实现. 不过现在下断言还为时尚早.</p>
+<p>经过努力,我实现了 Carboxyl 库, 挂在 <a href="https://github.com/aepsil0n/carboxyl" target="_blank"> github </a>, <a href="https://crates.io/crates/carboxyl" target="_blank"> crates.io</a> 和 <a href="http://www.rust-ci.org/aepsil0n/carboxyl/doc/carboxyl/" target="_blank"> rustci </a> 上面. 你可以把它当作是 Sodium 大部分的功能的 Rust 实现. 尽管现在还没有进行改进. 两周前当还是个粗糙的原型的时候(大部分是并发问题)我发布了它. 现在为止, 可以说基本的业务都运行的很正确. 它还缺少一些方便的函数, 目前正在逐一添加. 最终他可能变成 Sodium 的 Rust 版本实现. 不过现在下断言还为时尚早.</p>
 <p>文档内容已经有所更新, 熟悉 FRP 的人应该能够很容易理解. 该文和文档是正交的, 会在某个时候写入文档. 我回总结所学到的基本 FRP 概念, 并使用这个库举例说明它在实际程序中的用法. 这主要为了减缓在 Rust 中使用 RFP 的学习难度曲线.</p>
 <h2>基本原理</h2>
 <p>这种模式的思路是非常简单的. 响应式编程在本质上很接近电子表格: 有许多格, 每格有随着时间和别的格的变动而改变的值不值. 或者更通俗的说, 他们随着事件而且改变. 事件可以是鼠标点击, 按键被按下或者释放.</p>
@@ -207,7 +207,7 @@
 <p>我必须说明下, 本人对已经存在的这些 API 不是特别满意. 更好的做法是抛开初始值.并提供一个能够在概念上关联可循环 cell 到自身的 closure. 然而有一些琐碎的实现问题. 当使用的时候, 应当考虑到这些改进.</p>
 <h1>结束致辞</h1>
 <p>在 Carboxyl 中重度使用了自动引用计数, 锁以及回调机制的 trait 对象. 同一时间只使用一个事务和全局锁来保证线程安全.</p>
-<p>目前还需要做更多的优化工作, 但是已经是一个已经能干活儿的 FRP 实现. 在不打破当前实现的基础上,加入更快更并行的机制.软件事物内存(Software Transactional Memory)看起来是一个好的解决办法,我回在随后关注这些.</p>
+<p>目前还需要做更多的优化工作, 但是已经是一个已经能干活儿的 FRP 实现. 在不打破当前实现的基础上,加入更快更并行的机制.软件事务内存(Software Transactional Memory)看起来是一个好的解决办法,我回在随后关注这些.</p>
 <p>从概念上说,函数响应式编程相对于传统事件分发机制是跳跃性的进步. 核心思想是一种函数式的概念. 因此最好不要尝试使用在 FRP 中没有的可变状态. 函数相应式编程并不能一劳永逸解决所有问题. 可以逐步的将函数式相应编程引进工程.</p>
 <p>个人已经有许多实际的使用函数响应式编程的经验, 并且非常期待在视频游戏中使用 FRP. 我会些一些后续文章介绍游戏循环, I/O 接口, 写函数式模拟器等等.</p>
 <p>非常期待将来有用 Rust 实现的全面的函数响应式游戏框架. 这需要不同程度的合作, 有许多问题需要解决. 不知道 Piston 会不会朝这个方向发展.  多亏 Rust 库都是通过模块化实现, 现在已经有大量优秀的组件. 基于此, 函数响应式编程模型才能被开发出来.</p>
