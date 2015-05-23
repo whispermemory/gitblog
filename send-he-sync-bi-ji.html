@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <meta charset="utf-8"> 
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="hell@world" />
+        <meta name="copyright" content="hell@world" />
+
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary">
+
+<meta name="keywords" content=", thread, " />
+
+<meta property="og:title" content="send 和 sync 笔记 "/>
+<meta property="og:url" content="/send-he-sync-bi-ji.html" />
+<meta property="og:description" content="翻译: by rustup(欢迎转载分享,请注明出处) 原文: 关于 Send 和 Sync 一些笔记 如果你最近在 #rust-internals 频道, 你可能已经听到一个疯子咆哮称他们有多么热爱 rust: ... [15:50:03] I love this language ... [20:02:07] did you know: Rust is awesome. .. 我醉心于 Sync 和 Send 良好的与任何事情交互的能力,尤其是 RFC 458 刚完成的 实现 我这里会写一些边缘和细微的东西,Aaron Turon, Niko Matsakis 和我都意识到的一些东西.这样就不必保持一直再发现它们. 因此 ..." />
+<meta property="og:site_name" content="代码火花" />
+<meta property="og:article:author" content="hell@world" />
+<meta property="og:article:published_time" content="2015-05-23T00:00:00" />
+<meta name="twitter:title" content="send 和 sync 笔记 ">
+<meta name="twitter:description" content="翻译: by rustup(欢迎转载分享,请注明出处) 原文: 关于 Send 和 Sync 一些笔记 如果你最近在 #rust-internals 频道, 你可能已经听到一个疯子咆哮称他们有多么热爱 rust: ... [15:50:03] I love this language ... [20:02:07] did you know: Rust is awesome. .. 我醉心于 Sync 和 Send 良好的与任何事情交互的能力,尤其是 RFC 458 刚完成的 实现 我这里会写一些边缘和细微的东西,Aaron Turon, Niko Matsakis 和我都意识到的一些东西.这样就不必保持一直再发现它们. 因此 ...">
+
+        <title>send 和 sync 笔记  · 代码火花
+</title>
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.1/css/font-awesome.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/theme/css/pygments.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="/theme/tipuesearch/tipuesearch.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="/theme/css/elegant.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="/theme/css/custom.css" media="screen">
+    </head>
+    <body>
+        <div id="content-sans-footer">
+        <div class="navbar navbar-static-top">
+            <div class="navbar-inner">
+                <div class="container-fluid">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <a class="brand" href="/"><span class=site-name>代码火花</span></a>
+                    <div class="nav-collapse collapse">
+                        <ul class="nav pull-right top-menu">
+                            <li ><a href="">Home</a></li>
+                            <li ><a href="/categories.html">Categories</a></li>
+                            <li ><a href="/tags.html">Tags</a></li>
+                            <li ><a href="/archives.html">Archives</a></li>
+                            <li><form class="navbar-search" action="/search.html" onsubmit="return validateForm(this.elements['q'].value);"> <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input"></form></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span1"></div>
+                <div class="span10">
+<article>
+<div class="row-fluid">
+    <header class="page-header span10 offset2">
+    <h1><a href="/send-he-sync-bi-ji.html"> send 和 sync 笔记  </a></h1>
+    </header>
+</div>
+
+<div class="row-fluid">
+        <div class="span8 offset2 article-content">
+
+            
+            <p>翻译: by rustup(欢迎转载分享,请注明出处)</p>
+<p>原文: <a href="http://huonw.github.io/blog/2015/02/some-notes-on-send-and-sync/" target="_blank">关于 Send 和 Sync 一些笔记</a></p>
+<p>如果你最近在 #rust-internals 频道, 你可能已经听到一个疯子咆哮称他们有多么热爱 rust:</p>
+<p>...
+[15:50:03] <huon> I love this language
+...
+[20:02:07] <huon> did you know: Rust is awesome.
+..</p>
+<p>我醉心于 Sync 和 Send 良好的与任何事情交互的能力,尤其是 <a href="https://github.com/rust-lang/rfcs/pull/458" target="_blank" > RFC 458 </a> 刚完成的<a href="https://github.com/rust-lang/rust/pull/22319" target="_blank" > 实现 </a></p>
+<p>我这里会写一些边缘和细微的东西,Aaron Turon, Niko Matsakis 和我都意识到的一些东西.这样就不必保持一直再发现它们. 因此, 不幸地, 这篇短文不打算将所有的让我们热衷的原因. 但...</p>
+<h2>trait</h2>
+<p>我确信我可以写一些东西
+rust 打算成为一种能够非常好的支持并发 (concurrency) 的语言. 有两方面 ownership&amp;lifetimes, 以及 trait Send&amp;Sync(这方面的文档现在还不太好, 尤其是最近的改进上线之后)</p>
+<p>这些 trait 捕获和控制线程最常见的两种数据访问和传递方法.声明转移 ownership 或者传递引用 (reference) 到另外一个线程是否是安全的.</p>
+<p>这些 trait 是记号 trait ,意味着它们没有方法, 也不会提供内在功能. 它们作为标记, 声明被标记的不变量的类型实现被期望满足特定功能(手动实现它们是 unsafe 的,因为程序员需要保证不变量(invariants)是被支持的). 尤其当定义是:</p>
+<ul>
+<li>如果是 T: Send 传递一个 T 类型值到另外一个线程不会引发数据竞争</li>
+<li>如果是 T: Sync 传递一个 &amp;T 引用到另外一个线程不会引发数据竞争(或者其它不安全因素)(也称作 T:Sync 实现了 &amp;T: Send)</li>
+</ul>
+<p>这是说: Sync 跟类型同时在多个线程之间传递有关系. Send 描述类型在穿越 task 边界的时候的行为. (这些定义很模糊, 但是核心组明确的对加强和正式化它们, 使他们能够支持具体有用的事情很感兴趣)</p>
+<p>这两个 trait 使得许多有用的并发和并行模型能够在保证内存安全基础上得以体现. 基本的例子包括消息传递和共享内存, 不可变和可变 (具备加强的原子操作指令, 或者被锁保护). 但是随着自动弃用安全机制的类型系统,更高级的功能也是可以有的. 以及标准库的设计, 比如操纵(读或者写)另外一个线程栈上的内存, 不加锁并行改变 vector 的不同部分.</p>
+<p>(值得一提的是, Rust 只保证内存安全,尤其是无数据竞争.它并不保障其它的并发并行问题, 比如死锁, 非数据竞争的竞争条件)</p>
+<p>我有一个很小的库, <a href="http://huonw.github.io/simple_parallel/simple_parallel/" target="_blank"> simple parallel </a>(<a> href="https://github.com/huonw/simple_parallel" target="_blank" &gt;source</a>). 它是用来实验这些想法的. 代码会炫一些上面提到的事情. 支持当天版本编译. 我认为 Rust 能做到的事是很酷的.</p>
+<p>不管如何, 以后会有更多的人提到这. 现在我就不继续扯淡了,还是着手写一些我想写的东西吧.</p>
+<h2>Sync + Copy =&gt; Send</h2>
+<p>即 如果类型 T 同时实现了 Sync 和 Copy, 那么它也可以实现 Send.相反的, 如果一个类型是 Send 的, 那么它只允许实现 Sync 和 Copy.
+证明:</p>
+<div class="highlight"><pre><span class="c1">// we start with some `T` on the main thread</span>
+<span class="k">let</span> <span class="nl">x:</span> <span class="no">T</span> <span class="o">=</span> <span class="p">...;</span>
+
+<span class="n">thread</span><span class="o">::</span><span class="n">scoped</span><span class="p">(</span><span class="o">||</span> <span class="p">{</span>
+    <span class="c1">// and transfer a reference to a subthread (safe, since T: Sync)</span>
+        <span class="k">let</span> <span class="nl">y:</span> <span class="o">&amp;</span><span class="no">T</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">x</span><span class="p">;</span>
+
+    <span class="c1">// now use `T: Copy` to duplicate the data out, meaning we&#39;ve</span>
+        <span class="c1">// transferred `x` by-value into this new thread</span>
+            <span class="k">let</span> <span class="nl">z:</span> <span class="no">T</span> <span class="o">=</span> <span class="o">*</span><span class="n">y</span><span class="p">;</span>
+
+<span class="p">})</span>
+</pre></div>
+
+
+<p>这个转移过程, 恰巧只是用了 Sync + Copy, 因此一定是安全的(如果不安全的话, T不允许实现 Send), 因此对于 T 实现 Send 是合法的.
+这看起来可能不是有趣的,因为它只是 Sync 定义的一种特殊情况.(能 Copy 出 &amp; 是 T:Copy 的基本属性,这也是在思考 &amp;T 的线程安全的时候要考虑到的),但是很细微.</p>
+<p>当然, 很多类型在所有情况下并不都需要考虑这个. 人们很容易遇到不是 Send 的存储共享内存的指针--比如 Rc--另外大多数这种类型都不是 Send 类型,因为他们并不管理内存--再如 Rc. 最出名的两个例子是 &amp; (Sync 保证安全并由编译器静态分析 lifetimes)和假定的 Gc<T> 指针. 我猜只小心 Gc 使用就行了.</p>
+<h2>&amp;mut T: Send 当 T: Send</h2>
+<p>我们希望能够弄清楚,究竟在什么时候能够在线程之间安全的传递  &amp;mut T . 对于共享的引用 &amp;T 来说是很简单的: 在 Sync 的定义处将 &amp;T 替换为 U,就变成 Send 的定义(相当于 alpha renaming,见注1). 因此 T:Sync 意味着 &amp;T:Send. 通过 <a href="https://github.com/rust-lang/rust/blob/522d09dfecbeca1595f25ac58c6d0178bbd21d7d/src/libcore/marker.rs#L388" target="_blank" >代码 </a>描述如下:</p>
+<div class="highlight"><pre><span class="n">unsafe</span> <span class="n">impl</span><span class="o">&lt;</span><span class="err">&#39;</span><span class="n">a</span><span class="p">,</span> <span class="n">T</span><span class="o">:</span> <span class="n">Sync</span><span class="o">&gt;</span> <span class="n">Send</span> <span class="k">for</span> <span class="o">&amp;</span><span class="err">&#39;</span><span class="n">a</span> <span class="n">T</span> <span class="p">{</span>
+</pre></div>
+
+
+<p>鉴于 Sync 对于引用类型的重要性,可能你会猜疑 &amp;mut 的 thread-safety 会通过某种方式依赖 Sync. 但这是错误的. 尽管词法近似, 但这是 &amp;mut 和 &amp; 在戏剧性的语意差异的一个例子.</p>
+<p>mutable reference type 保证它是全局非别名变量, 如果一个线程通过 &amp;mut 访问数据, 那么它是整个程序中唯一合法读写该变量的线程.此外, 在该线程访问的时候不会有内存共享以及其它多个线程共享访问该内存. 因此 Sync 不保证 &amp;mut  共享内存的线程安全.(RFC 458 &amp;mut 线性内容访问有说明)</p>
+<p>看起来在线程间传递 &amp;mut T 几乎对于任意的 T 类型都是安全的. 这种观点可能是 Send  描述线程间 'passing by value' , 这种传递改变了程序的一些基本属性, 比如何时何地析构器(destructors)执行.另一方面 传递 &amp;mut T 是 ‘'passing by reference' 不会改变这些. 同时 &amp;mut 具有唯一的访问,整个设置和在原始的线程里运行是一样的. 传递 &amp;mut T不会改变何时何地 T 的析构器执行: 它仍然在主线程中跳出 scope 的时候执行</p>
+<p>不走运的是:</p>
+<div class="highlight"><pre><span class="c1">// we start with some `T` on the main thread</span>
+<span class="k">let</span> <span class="nl">x:</span> <span class="no">T</span> <span class="o">=</span> <span class="p">...;</span>
+<span class="c1">// wrap it up</span>
+<span class="k">let</span> <span class="n">mut</span> <span class="nl">packet:</span> <span class="n">Option</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="o">=</span> <span class="n">Some</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+
+<span class="n">thread</span><span class="o">::</span><span class="n">scoped</span><span class="p">(</span><span class="o">||</span> <span class="p">{</span>
+    <span class="c1">// and transfer just a mutable reference to the other thread</span>
+        <span class="k">let</span> <span class="nl">y:</span> <span class="o">&amp;</span><span class="n">mut</span> <span class="n">Option</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">mut</span> <span class="n">packet</span><span class="p">;</span>
+
+    <span class="c1">// and then steal the `T` out!</span>
+        <span class="k">let</span> <span class="nl">z:</span> <span class="no">T</span> <span class="o">=</span> <span class="n">y</span><span class="p">.</span><span class="n">take</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span>
+<span class="p">})</span>
+</pre></div>
+
+
+<p>代码通过传递 &amp;mut Option<T> 在两个线程中传递 T. 因此, 如果能够在线程间按值传递 T, 也就能够传递  &amp;mut Option<T>. 因为我们能够使用它构造一个 T Transfer. 使用伪代码就是 if T: !Send , then &amp;mut Option<T>: !Send(使用 negative bounds !, 意味着 T 没有实现 Send)</p>
+<p>当然, 这并非 Option 本身的失误, 这只是一个直接的例子. 可以在每个线程中创建 T, 使用 std::mem::swap 来交换位置. 让所有的 T 都能够在线程中按值传递(双倍不安全)</p>
+<p>普遍的规则是: 如果 T:Send 成立,传递 &amp;mut T 是安全的, &amp;mut T 在并发时的行为就像 T . (理论上有传递 &amp;mut T 安全,但是传递 T 不安全的类型. 意味着 &amp;mut T:Send 但是没有 T:Send, 因此不是有且仅有的关系, 正如 wrongerontheinternet 在 /r/rust 中指出的那样.)</p>
+<p>注1: 参见<a href="http://stackoverflow.com/questions/5836910/alpha-renaming-in-many-languages" target="_blank">http://stackoverflow.com/questions/5836910/alpha-renaming-in-many-languages</a></p>
+            
+            
+            <hr/>
+        </div>
+        <section>
+        <div class="span2" style="float:right;font-size:0.9em;">
+            <h4>Published</h4>
+            <time pubdate="pubdate" datetime="2015-05-23T00:00:00">May 23, 2015</time>
+            <h4>Category</h4>
+            <a class="category-link" href="/categories.html#thread-ref">thread</a>
+
+
+	    <!-- 多说评论框 start -->
+	    <div class="ds-thread" data-thread-key="1" data-title="Rust Means Never Having to Close a Socket" data-url="Rust Means Never Having to Close a Socket"></div>
+	    <!-- 多说评论框 end -->
+	    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	    <script type="text/javascript">
+	    var duoshuoQuery = {short_name:"rustup"};
+(function() {
+ var ds = document.createElement('script');
+ ds.type = 'text/javascript';ds.async = true;
+ ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+ ds.charset = 'UTF-8';
+ (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+ })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+<h4>Contact</h4>
+    <a href="#" title="My You can add links in your config file Profile" class="sidebar-social-links" target="_blank">
+    <i class="fa fa-you can add links in your config file sidebar-social-links"></i></a>
+    <a href="#" title="My Another social link Profile" class="sidebar-social-links" target="_blank">
+    <i class="fa fa-another social link sidebar-social-links"></i></a>
+        </div>
+        </section>
+</div>
+</article>
+                </div>
+                <div class="span1"></div>
+            </div>
+        </div>
+        <div id="push"></div>
+    </div>
+<footer>
+<div id="footer">
+    <ul class="footer-content">
+        <li class="elegant-power">Powered by <a href="http://getpelican.com/" title="Pelican Home Page">Pelican</a>. Theme: <a href="http://oncrashreboot.com/pelican-elegant" title="Theme Elegant Home Page">Elegant</a> by <a href="http://oncrashreboot.com" title="Talha Mansoor Home Page">Talha Mansoor</a></li>
+    </ul>
+</div>
+</footer>            <script src="http://code.jquery.com/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+        <script>
+            function validateForm(query)
+            {
+                return (query.length > 0);
+            }
+        </script>
+
+    
+    </body>
+    <!-- Theme: Elegant built for Pelican
+    License : http://oncrashreboot.com/pelican-elegant -->
+</html>
