@@ -1,19 +1,7 @@
-# 将 md 文件转换为 git blog 页面#
+#　技术博客　#
 
-## 预览 ##
-*  ![预览](./preview.png)
-
-## 前端 ##
-使用了 <http://caosz.com/> 的前端模板,表示感谢
-
-## md 转 html ##
-使用了 blackfriday 的转换引擎
-<https://github.com/russross/blackfriday>
-
-## 本页面 <www.goemacs.com> ##
-
-## todo ##
-*  修改文章
-*  删除文章
-
-
+## 关于 ##
++  语言, 设计
++  网络, 并发
++  高可用, 分布式
++  数据库
