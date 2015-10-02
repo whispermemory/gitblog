@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <meta charset="utf-8"> 
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="hell@world" />
+        <meta name="copyright" content="hell@world" />
+
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary">
+
+<meta name="keywords" content=", 工具集, " />
+
+<meta property="og:title" content="快速迁移 emacs 方案 "/>
+<meta property="og:url" content="/kuai-su-qian-yi-emacs-fang-an.html" />
+<meta property="og:description" content="简便迁移 emacs 目的 当需要在新的电脑上使用 emacs 的时候, 快速轻便的搭建自己的 emacs 环境. 要实现的直接目标即: 需要迁移自己的 emacs 环境的时候, 一个命令即可. 实现方法 emacs 本身是由插件支持的, 通过配置设置和配置插件来达到个性化的目的. 因此关键的目录只有两个 .emacs 配置文件和 .emacs.d 插件目录. 配置的迁移比较简单 直接上传 gist 服务器上, 从 gist 服务器下载即可. 国内因为 gist 服务被屏蔽了, 虽然可以通过修改 dns 正常访问, 为了省却这个改 dns 的过程, 直接拿 ip 访问了. 插件迁移因为插件数目多, 下载文件也多, 略麻烦. 有两种思路, 第一种是插件也完全上传到 github 服务器 ..." />
+<meta property="og:site_name" content="代码火花" />
+<meta property="og:article:author" content="hell@world" />
+<meta property="og:article:published_time" content="2015-10-02T00:00:00" />
+<meta name="twitter:title" content="快速迁移 emacs 方案 ">
+<meta name="twitter:description" content="简便迁移 emacs 目的 当需要在新的电脑上使用 emacs 的时候, 快速轻便的搭建自己的 emacs 环境. 要实现的直接目标即: 需要迁移自己的 emacs 环境的时候, 一个命令即可. 实现方法 emacs 本身是由插件支持的, 通过配置设置和配置插件来达到个性化的目的. 因此关键的目录只有两个 .emacs 配置文件和 .emacs.d 插件目录. 配置的迁移比较简单 直接上传 gist 服务器上, 从 gist 服务器下载即可. 国内因为 gist 服务被屏蔽了, 虽然可以通过修改 dns 正常访问, 为了省却这个改 dns 的过程, 直接拿 ip 访问了. 插件迁移因为插件数目多, 下载文件也多, 略麻烦. 有两种思路, 第一种是插件也完全上传到 github 服务器 ...">
+
+        <title>快速迁移 emacs 方案  · 代码火花
+</title>
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.1/css/font-awesome.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/theme/css/pygments.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="/theme/tipuesearch/tipuesearch.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="/theme/css/elegant.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="/theme/css/custom.css" media="screen">
+    </head>
+    <body>
+        <div id="content-sans-footer">
+        <div class="navbar navbar-static-top">
+            <div class="navbar-inner">
+                <div class="container-fluid">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <a class="brand" href="/"><span class=site-name>代码火花</span></a>
+                    <div class="nav-collapse collapse">
+                        <ul class="nav pull-right top-menu">
+                            <li ><a href="">Home</a></li>
+                            <li ><a href="/categories.html">Categories</a></li>
+                            <li ><a href="/tags.html">Tags</a></li>
+                            <li ><a href="/archives.html">Archives</a></li>
+                            <li><form class="navbar-search" action="/search.html" onsubmit="return validateForm(this.elements['q'].value);"> <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input"></form></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span1"></div>
+                <div class="span10">
+<article>
+<div class="row-fluid">
+    <header class="page-header span10 offset2">
+    <h1><a href="/kuai-su-qian-yi-emacs-fang-an.html"> 快速迁移 emacs 方案  </a></h1>
+    </header>
+</div>
+
+<div class="row-fluid">
+        <div class="span8 offset2 article-content">
+
+            
+            <h1>简便迁移 emacs</h1>
+<h2>目的</h2>
+<p>当需要在新的电脑上使用 emacs 的时候, 快速轻便的搭建自己的 emacs 环境. 要实现的直接目标即: 需要迁移自己的 emacs 环境的时候, 一个命令即可. </p>
+<h2>实现方法</h2>
+<p>emacs 本身是由插件支持的, 通过配置设置和配置插件来达到个性化的目的. 因此关键的目录只有两个 .emacs 配置文件和 .emacs.d 插件目录.</p>
+<p>配置的迁移比较简单 直接上传 gist 服务器上, 从 gist  服务器下载即可. 国内因为 gist 服务被屏蔽了, 虽然可以通过修改 dns 正常访问, 为了省却这个改 dns 的过程, 直接拿 ip 访问了.</p>
+<p>插件迁移因为插件数目多, 下载文件也多, 略麻烦. 有两种思路, 第一种是插件也完全上传到 github 服务器. 但这样做不够轻便. 另外一种思路是通过 emacs 内置提供的 package 功能来实现配置自动下载. 这种方案只需要将需要安装下载的插件 写进配置即可.</p>
+<h2>具体操作</h2>
+<h3>准备 emacs 程序</h3>
+<p>在需要迁移的操作系统环境上, 使用操作系统提供的下载工具下载最新的 emacs(当前是 emacs24).
+centos 使用
+<code>yum install emacs</code></p>
+<p>ubuntu 使用命令
+<code>sudo apt-get install emacs</code>
+osx 使用
+<code>brew install emacs</code></p>
+<h3>执行迁移</h3>
+<p>打开 emacs 程序
+在 buffer 中粘贴下面的代码</p>
+<div class="highlight"><pre><span class="p">(</span><span class="n">defun</span> <span class="n">curl</span><span class="o">-</span><span class="n">save</span> <span class="p">(</span><span class="n">url</span> <span class="n">file</span><span class="p">)</span>
+  <span class="p">(</span><span class="n">interactive</span><span class="p">)</span>
+   <span class="p">(</span><span class="n">with</span><span class="o">-</span><span class="n">current</span><span class="o">-</span><span class="n">buffer</span> <span class="p">(</span><span class="n">url</span><span class="o">-</span><span class="n">retrieve</span><span class="o">-</span><span class="n">synchronously</span>  <span class="n">url</span><span class="p">)</span>
+  <span class="p">(</span><span class="k">goto</span><span class="o">-</span><span class="kt">char</span> <span class="p">(</span><span class="n">point</span><span class="o">-</span><span class="n">min</span><span class="p">))</span>
+  <span class="p">(</span><span class="n">re</span><span class="o">-</span><span class="n">search</span><span class="o">-</span><span class="n">forward</span> <span class="s">&quot;</span><span class="se">\r</span><span class="s">?</span><span class="se">\n\r</span><span class="s">?</span><span class="se">\n</span><span class="s">&quot;</span> <span class="n">nil</span> <span class="n">t</span><span class="p">)</span>
+  <span class="p">(</span><span class="n">delete</span><span class="o">-</span><span class="n">region</span> <span class="p">(</span><span class="n">point</span><span class="p">)</span> <span class="p">(</span><span class="n">point</span><span class="o">-</span><span class="n">min</span><span class="p">))</span>
+  <span class="p">(</span><span class="n">write</span><span class="o">-</span><span class="n">region</span> <span class="p">(</span><span class="n">point</span><span class="o">-</span><span class="n">min</span><span class="p">)</span> <span class="p">(</span><span class="n">point</span><span class="o">-</span><span class="n">max</span><span class="p">)</span> <span class="n">file</span><span class="p">))</span>
+<span class="p">)</span>
+<span class="p">(</span><span class="n">mkdir</span> <span class="s">&quot;~/.emacs.d&quot;</span><span class="p">)</span>
+<span class="p">(</span><span class="n">curl</span><span class="o">-</span><span class="n">save</span> <span class="s">&quot;https://103.245.222.133/whispermemory/48d735397ce955c4b9b8/raw/89855d08ff82e2ac6f0c4ac2970224c30d967c67/.emacs&quot;</span> <span class="s">&quot;~/.emacs&quot;</span><span class="p">)</span>
+<span class="p">(</span><span class="n">curl</span><span class="o">-</span><span class="n">save</span> <span class="s">&quot;https://103.245.222.133/whispermemory/48d735397ce955c4b9b8/raw/89855d08ff82e2ac6f0c4ac2970224c30d967c67/auto-config.el&quot;</span> <span class="s">&quot;~/.emacs.d/auto-config.el&quot;</span><span class="p">)</span>
+<span class="p">(</span><span class="n">curl</span><span class="o">-</span><span class="n">save</span> <span class="s">&quot;https://103.245.222.133/whispermemory/48d735397ce955c4b9b8/raw/89855d08ff82e2ac6f0c4ac2970224c30d967c67/auto-package.el&quot;</span> <span class="s">&quot;~/.emacs.d/auto-package.el&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>重启 emacs 之后会自动更新配置并安装插件</p>
+<h3>代码解释</h3>
+<p>这段代码主要使用 url-retrieve-synchronously 函数进行下载, 之后进行一些文件操作
+详见 <a href="http://www.emacswiki.org/emacs/UrlPackage" target="_blank"> url package </a></p>
+<p>curl-save 执行的是下载并安装的函数</p>
+            
+            
+            <hr/>
+        </div>
+        <section>
+        <div class="span2" style="float:right;font-size:0.9em;">
+            <h4>Published</h4>
+            <time pubdate="pubdate" datetime="2015-10-02T00:00:00">Oct 2, 2015</time>
+            <h4>Category</h4>
+            <a class="category-link" href="/categories.html#gong-ju-ji-ref">工具集</a>
+
+
+	    <!-- 多说评论框 start -->
+	    <div class="ds-thread" data-thread-key="1" data-title="Rust Means Never Having to Close a Socket" data-url="Rust Means Never Having to Close a Socket"></div>
+	    <!-- 多说评论框 end -->
+	    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	    <script type="text/javascript">
+	    var duoshuoQuery = {short_name:"rustup"};
+(function() {
+ var ds = document.createElement('script');
+ ds.type = 'text/javascript';ds.async = true;
+ ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+ ds.charset = 'UTF-8';
+ (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+ })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+<h4>Contact</h4>
+    <a href="#" title="My You can add links in your config file Profile" class="sidebar-social-links" target="_blank">
+    <i class="fa fa-you can add links in your config file sidebar-social-links"></i></a>
+    <a href="#" title="My Another social link Profile" class="sidebar-social-links" target="_blank">
+    <i class="fa fa-another social link sidebar-social-links"></i></a>
+        </div>
+        </section>
+</div>
+</article>
+                </div>
+                <div class="span1"></div>
+            </div>
+        </div>
+        <div id="push"></div>
+    </div>
+<footer>
+<div id="footer">
+    <ul class="footer-content">
+        <li class="elegant-power">Powered by <a href="http://getpelican.com/" title="Pelican Home Page">Pelican</a>. Theme: <a href="http://oncrashreboot.com/pelican-elegant" title="Theme Elegant Home Page">Elegant</a> by <a href="http://oncrashreboot.com" title="Talha Mansoor Home Page">Talha Mansoor</a></li>
+    </ul>
+</div>
+</footer>            <script src="http://code.jquery.com/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+        <script>
+            function validateForm(query)
+            {
+                return (query.length > 0);
+            }
+        </script>
+
+    
+    </body>
+    <!-- Theme: Elegant built for Pelican
+    License : http://oncrashreboot.com/pelican-elegant -->
+</html>

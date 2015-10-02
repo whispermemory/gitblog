@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <meta charset="utf-8"> 
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="hell@world" />
+        <meta name="copyright" content="hell@world" />
+
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary">
+
+<meta name="keywords" content=", web, " />
+
+<meta property="og:title" content="rust web 框架 nickel.rs 简介 "/>
+<meta property="og:url" content="/rust-web-kuang-jia-nickelrs-jian-jie.html" />
+<meta property="og:description" content="介绍 nickel.rs 是一个使用 rust-lang 语言实现的简单轻量级的 web 框架. 风格类似 nodejs 的 express 框架. 比较简洁. 本文介绍使用 nickel.rs 搭建 web 服务的流程. 初步认识 nickel.rs 简单的看下运行一个 hello, world 的 http 服务代码 #[macro_use] extern crate nickel; use nickel::{Nickel, HttpRouter}; fn main() { let mut server = Nickel::new(); server.get(&#34;**&#34;, middleware!(&#34;Hello World&#34;)); server ..." />
+<meta property="og:site_name" content="代码火花" />
+<meta property="og:article:author" content="hell@world" />
+<meta property="og:article:published_time" content="2015-06-14T00:00:00" />
+<meta name="twitter:title" content="rust web 框架 nickel.rs 简介 ">
+<meta name="twitter:description" content="介绍 nickel.rs 是一个使用 rust-lang 语言实现的简单轻量级的 web 框架. 风格类似 nodejs 的 express 框架. 比较简洁. 本文介绍使用 nickel.rs 搭建 web 服务的流程. 初步认识 nickel.rs 简单的看下运行一个 hello, world 的 http 服务代码 #[macro_use] extern crate nickel; use nickel::{Nickel, HttpRouter}; fn main() { let mut server = Nickel::new(); server.get(&#34;**&#34;, middleware!(&#34;Hello World&#34;)); server ...">
+
+        <title>rust web 框架 nickel.rs 简介  · 代码火花
+</title>
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.1/css/font-awesome.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/theme/css/pygments.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="/theme/tipuesearch/tipuesearch.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="/theme/css/elegant.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="/theme/css/custom.css" media="screen">
+    </head>
+    <body>
+        <div id="content-sans-footer">
+        <div class="navbar navbar-static-top">
+            <div class="navbar-inner">
+                <div class="container-fluid">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <a class="brand" href="/"><span class=site-name>代码火花</span></a>
+                    <div class="nav-collapse collapse">
+                        <ul class="nav pull-right top-menu">
+                            <li ><a href="">Home</a></li>
+                            <li ><a href="/categories.html">Categories</a></li>
+                            <li ><a href="/tags.html">Tags</a></li>
+                            <li ><a href="/archives.html">Archives</a></li>
+                            <li><form class="navbar-search" action="/search.html" onsubmit="return validateForm(this.elements['q'].value);"> <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input"></form></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span1"></div>
+                <div class="span10">
+<article>
+<div class="row-fluid">
+    <header class="page-header span10 offset2">
+    <h1><a href="/rust-web-kuang-jia-nickelrs-jian-jie.html"> rust web 框架 nickel.rs 简介  </a></h1>
+    </header>
+</div>
+
+<div class="row-fluid">
+        <div class="span8 offset2 article-content">
+
+            
+            <h2>介绍</h2>
+<p><a href="http://nickel.rs/" target="_blank" > nickel.rs  </a> 是一个使用 <a href="rustlang.org" target="_blank" > rust-lang </a>  语言实现的简单轻量级的 web 框架. 风格类似 nodejs 的 express 框架. 比较简洁. 本文介绍使用 nickel.rs 搭建 web 服务的流程.</p>
+<h2>初步认识 nickel.rs</h2>
+<p>简单的看下运行一个 hello, world 的 http 服务代码</p>
+<div class="highlight"><pre><span class="cp">#[macro_use] extern crate nickel;</span>
+
+<span class="n">use</span> <span class="n">nickel</span><span class="o">::</span><span class="p">{</span><span class="n">Nickel</span><span class="p">,</span> <span class="n">HttpRouter</span><span class="p">};</span>
+
+<span class="n">fn</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">let</span> <span class="n">mut</span> <span class="n">server</span> <span class="o">=</span> <span class="n">Nickel</span><span class="o">::</span><span class="n">new</span><span class="p">();</span>
+    <span class="n">server</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;**&quot;</span><span class="p">,</span> <span class="n">middleware</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Hello World&quot;</span><span class="p">));</span>
+    <span class="n">server</span><span class="p">.</span><span class="n">listen</span><span class="p">(</span><span class="s">&quot;127.0.0.1:6767&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>代码简单明了!</p>
+<h2>准备工作</h2>
+<ul>
+<li>使用 binary 文件安装   <a href="http://www.rust-lang.org/install.html" target="_blank"> rust-lang v1.0.0 </a>(手动编译时间较长, 使用 binary 安装较为便捷)</li>
+<li>安装 <a href="https://crates.io/install" target="_blank"> cargo </a>, cargo 是 rust-lang 的包管理工具, 如果使用 rust 的 binary 安装,则会自带 cargo, 可省略这一步.</li>
+<li>checkout  nickel.rs 代码, github 地址 https://github.com/nickel-org/nickel.rs.git</li>
+</ul>
+<h2>灵活的 routing</h2>
+<div class="highlight"><pre><span class="cp">#[macro_use] extern crate nickel;</span>
+
+<span class="n">use</span> <span class="n">nickel</span><span class="o">::</span><span class="p">{</span><span class="n">Nickel</span><span class="p">,</span> <span class="n">HttpRouter</span><span class="p">};</span>
+
+<span class="n">fn</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">let</span> <span class="n">mut</span> <span class="n">server</span> <span class="o">=</span> <span class="n">Nickel</span><span class="o">::</span><span class="n">new</span><span class="p">();</span>
+
+    <span class="n">server</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;/bar&quot;</span><span class="p">,</span> <span class="n">middleware</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;This is the /bar handler&quot;</span><span class="p">));</span>
+    <span class="n">server</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;/user/:userid&quot;</span><span class="p">,</span> <span class="n">middleware</span><span class="o">!</span> <span class="p">{</span> <span class="o">|</span><span class="n">request</span><span class="o">|</span>
+        <span class="n">format</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;This is user: {:?}&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">.</span><span class="n">param</span><span class="p">(</span><span class="s">&quot;userid&quot;</span><span class="p">))</span>
+    <span class="p">});</span>
+    <span class="n">server</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;/a/*/d&quot;</span><span class="p">,</span> <span class="n">middleware</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;matches /a/b/d but not /a/b/c/d&quot;</span><span class="p">));</span>
+    <span class="n">server</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;/a/**/d&quot;</span><span class="p">,</span> <span class="n">middleware</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;This matches /a/b/d and also /a/b/c/d&quot;</span><span class="p">));</span>
+
+    <span class="n">server</span><span class="p">.</span><span class="n">listen</span><span class="p">(</span><span class="s">&quot;127.0.0.1:6767&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>router 支持下面几种格式</p>
+<ul>
+<li>
+<p>单一的 router 变量:  /router/:router_argument</p>
+</li>
+<li>
+<p>通配 router :  /some_matched/*/route</p>
+</li>
+<li>
+<p>双通配符 router: /a/**/route , 可以通配 /a/b/route  a/b/c/route</p>
+</li>
+</ul>
+<h2>router 和 request 搭配使用</h2>
+<p>先看看 get 方法:</p>
+<div class="highlight"><pre><span class="n">server</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="n">middleware</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;This is the /bar handler&quot;</span><span class="p">));</span>
+<span class="c1">//获取 request 参数</span>
+<span class="n">server</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;/user/:userid&quot;</span><span class="p">,</span> <span class="n">middleware</span><span class="o">!</span> <span class="p">{</span> <span class="o">|</span><span class="n">request</span><span class="o">|</span>
+        <span class="n">format</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;This is user: {:?}&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">.</span><span class="n">param</span><span class="p">(</span><span class="s">&quot;userid&quot;</span><span class="p">))</span>
+    <span class="p">});</span>
+
+<span class="c1">//返回数据</span>
+ <span class="n">server</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="n">middleware</span><span class="o">!</span> <span class="p">{</span> <span class="o">|</span><span class="n">_</span><span class="p">,</span> <span class="n">response</span><span class="o">|</span>
+        <span class="n">let</span> <span class="n">mut</span> <span class="n">data</span> <span class="o">=</span> <span class="n">HashMap</span><span class="o">::</span><span class="n">new</span><span class="p">();</span>
+        <span class="n">data</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span> <span class="s">&quot;user&quot;</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">response</span><span class="p">.</span><span class="n">render</span><span class="p">(</span><span class="s">&quot;examples/assets/template.tpl&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">);</span>
+    <span class="p">});</span>
+</pre></div>
+
+
+<p>post 方法</p>
+<div class="highlight"><pre><span class="n">server</span><span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="s">&quot;/a/post/request&quot;</span><span class="p">,</span> <span class="n">middleware</span><span class="o">!</span> <span class="p">{</span> <span class="o">|</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="o">|</span>
+        <span class="n">format</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Hello {}&quot;</span><span class="p">,</span><span class="s">&quot;post hello&quot;</span><span class="p">)</span><span class="c1">//注意此处无 ;</span>
+    <span class="p">});</span>
+</pre></div>
+
+
+<p>json 处理, 通常会转化为结构体</p>
+<div class="highlight"><pre><span class="err">#[</span><span class="nx">derive</span><span class="p">(</span><span class="nx">RustcDecodable</span><span class="p">,</span> <span class="nx">RustcEncodable</span><span class="p">)</span><span class="cp">]</span>
+struct Person {
+    firstname: String,
+    lastname:  String,
+}
+server.post(&quot;/a/post/request&quot;, middleware! { |request, response|
+        let person = request.json_as::<span class="nt">&lt;Person&gt;</span>().unwrap();
+        format!(&quot;Hello {} {}&quot;, person.firstname, person.lastname)
+});
+</pre></div>
+
+
+<h2>使用模板</h2>
+<p>nickel.rs 使用 <a href="https://mustache.github.io/" target="_blank">mustache 的模板</a> , 可以参照 <a href="https://mustache.github.io/#demo" target="_blank"> demo </a>, demo 中使用的是 json 传递后端口.</p>
+<div class="highlight"><pre><span class="nt">&lt;html&gt;</span>
+    <span class="nt">&lt;body&gt;</span>
+        <span class="nt">&lt;h1&gt;</span>
+            Hello {{ name }}!
+        <span class="nt">&lt;/h1&gt;</span>
+    <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></div>
+
+
+<p>在后端, 使用 response.render(template, data) 将数据渲染到 html 中</p>
+<div class="highlight"><pre><span class="cp">#[macro_use] extern crate nickel;</span>
+<span class="n">use</span> <span class="n">std</span><span class="o">::</span><span class="n">collections</span><span class="o">::</span><span class="n">HashMap</span><span class="p">;</span>
+<span class="n">use</span> <span class="n">nickel</span><span class="o">::</span><span class="p">{</span><span class="n">Nickel</span><span class="p">,</span> <span class="n">HttpRouter</span><span class="p">};</span>
+
+<span class="n">fn</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">let</span> <span class="n">mut</span> <span class="n">server</span> <span class="o">=</span> <span class="n">Nickel</span><span class="o">::</span><span class="n">new</span><span class="p">();</span>
+
+    <span class="n">server</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="n">middleware</span><span class="o">!</span> <span class="p">{</span> <span class="o">|</span><span class="n">_</span><span class="p">,</span> <span class="n">response</span><span class="o">|</span>
+        <span class="n">let</span> <span class="n">mut</span> <span class="n">data</span> <span class="o">=</span> <span class="n">HashMap</span><span class="o">::</span><span class="n">new</span><span class="p">();</span>
+        <span class="n">data</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span> <span class="s">&quot;user&quot;</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">response</span><span class="p">.</span><span class="n">render</span><span class="p">(</span><span class="s">&quot;examples/assets/template.tpl&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">);</span>
+    <span class="p">});</span>
+
+    <span class="n">server</span><span class="p">.</span><span class="n">listen</span><span class="p">(</span><span class="s">&quot;127.0.0.1:6767&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>如果需要传递数组, 并解析数组
+template 可以写成</p>
+<div class="highlight"><pre><span class="p">{{</span><span class="err">#</span><span class="n">names</span><span class="p">}}</span> <span class="p">{{.}}</span> <span class="p">{{</span><span class="o">/</span><span class="n">names</span><span class="p">}}</span>
+</pre></div>
+
+
+<p>后端代码如下</p>
+<div class="highlight"><pre> <span class="err">#</span><span class="p">[</span><span class="n">macro_use</span><span class="p">]</span> <span class="k">extern</span> <span class="n">crate</span> <span class="n">nickel</span><span class="p">;</span>
+ <span class="n">use</span> <span class="n">nickel</span><span class="o">::</span><span class="p">{</span><span class="n">Nickel</span><span class="p">,</span> <span class="n">HttpRouter</span><span class="p">};</span>
+ <span class="n">use</span> <span class="n">std</span><span class="o">::</span><span class="n">collections</span><span class="o">::</span><span class="n">HashMap</span><span class="p">;</span>
+
+ <span class="n">fn</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+     <span class="n">let</span> <span class="n">mut</span> <span class="n">server</span> <span class="o">=</span> <span class="n">Nickel</span><span class="o">::</span><span class="n">new</span><span class="p">();</span>
+     <span class="n">server</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="n">middleware</span><span class="o">!</span> <span class="p">{</span> <span class="o">|</span><span class="n">_</span><span class="p">,</span> <span class="n">response</span><span class="o">|</span>
+                                       <span class="n">let</span> <span class="n">mut</span> <span class="n">data</span> <span class="o">=</span> <span class="n">HashMap</span><span class="o">::</span><span class="n">new</span><span class="p">();</span>
+                                       <span class="n">let</span> <span class="n">v</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[</span><span class="s">&quot;zhang&quot;</span><span class="p">,</span><span class="s">&quot;wang&quot;</span><span class="p">,</span><span class="s">&quot;li&quot;</span><span class="p">];</span>
+                                       <span class="n">data</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&quot;items&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+
+                                       <span class="k">return</span> <span class="n">response</span><span class="p">.</span><span class="n">render</span><span class="p">(</span><span class="s">&quot;examples/assets/template.tpl&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">);</span>
+     <span class="p">});</span>
+
+     <span class="n">server</span><span class="p">.</span><span class="n">listen</span><span class="p">(</span><span class="s">&quot;127.0.0.1:6767&quot;</span><span class="p">);</span>
+ <span class="p">}</span>
+</pre></div>
+
+
+<p>另外在 mustache 中 # 也可以代表存在 true, 如果是不存在或 false 使用 ^
+{{ ^exists }} {{ do something }} {{/exists}} </p>
+<h2>一些不太方便的地方</h2>
+<ul>
+<li>因为使用了宏, 使用相对来说比较简洁方便. 宏提升了学习曲线.</li>
+<li>不支持热编译, 改写后端代码后, 需要重新编译运行</li>
+<li>前端模板变化, 需要重新编译</li>
+</ul>
+            
+            
+            <hr/>
+        </div>
+        <section>
+        <div class="span2" style="float:right;font-size:0.9em;">
+            <h4>Published</h4>
+            <time pubdate="pubdate" datetime="2015-06-14T00:00:00">Jun 14, 2015</time>
+            <h4>Category</h4>
+            <a class="category-link" href="/categories.html#web-ref">web</a>
+
+
+	    <!-- 多说评论框 start -->
+	    <div class="ds-thread" data-thread-key="1" data-title="Rust Means Never Having to Close a Socket" data-url="Rust Means Never Having to Close a Socket"></div>
+	    <!-- 多说评论框 end -->
+	    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	    <script type="text/javascript">
+	    var duoshuoQuery = {short_name:"rustup"};
+(function() {
+ var ds = document.createElement('script');
+ ds.type = 'text/javascript';ds.async = true;
+ ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+ ds.charset = 'UTF-8';
+ (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+ })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+<h4>Contact</h4>
+    <a href="#" title="My You can add links in your config file Profile" class="sidebar-social-links" target="_blank">
+    <i class="fa fa-you can add links in your config file sidebar-social-links"></i></a>
+    <a href="#" title="My Another social link Profile" class="sidebar-social-links" target="_blank">
+    <i class="fa fa-another social link sidebar-social-links"></i></a>
+        </div>
+        </section>
+</div>
+</article>
+                </div>
+                <div class="span1"></div>
+            </div>
+        </div>
+        <div id="push"></div>
+    </div>
+<footer>
+<div id="footer">
+    <ul class="footer-content">
+        <li class="elegant-power">Powered by <a href="http://getpelican.com/" title="Pelican Home Page">Pelican</a>. Theme: <a href="http://oncrashreboot.com/pelican-elegant" title="Theme Elegant Home Page">Elegant</a> by <a href="http://oncrashreboot.com" title="Talha Mansoor Home Page">Talha Mansoor</a></li>
+    </ul>
+</div>
+</footer>            <script src="http://code.jquery.com/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+        <script>
+            function validateForm(query)
+            {
+                return (query.length > 0);
+            }
+        </script>
+
+    
+    </body>
+    <!-- Theme: Elegant built for Pelican
+    License : http://oncrashreboot.com/pelican-elegant -->
+</html>
